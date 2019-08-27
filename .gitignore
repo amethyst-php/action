@@ -1,0 +1,6 @@
+vendor/
+var/
+phpunit.xml
+\.env
+composer\.lock
+build/
