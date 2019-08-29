@@ -1,0 +1,7 @@
+# The payload is the main configuration of the entity Action
+#
+# Here you can define what job should handle the worker
+#
+# class: MyClass
+# arguments:
+#   id: {{ id }}

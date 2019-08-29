@@ -16,6 +16,7 @@ class CreateActionsTable extends Migration
             $table->increments('id');
             $table->string('name')->unique();
             $table->text('description')->nullable();
+            $table->text('payload');
             $table->timestamps();
             $table->softDeletes();
         });
