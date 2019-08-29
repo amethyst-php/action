@@ -2,7 +2,7 @@
 
 namespace Amethyst\Jobs;
 
-use Amethyst\Models\Action;
+use Amethyst\Actions\Action as BaseAction;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -10,6 +10,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Railken\Template\Generators;
 use Symfony\Component\Yaml\Yaml;
+use Closure;
+use Railken\Bag;
 
 class Action implements ShouldQueue
 {
@@ -20,16 +22,19 @@ class Action implements ShouldQueue
 
     protected $action;
     protected $data;
+    protected $next;
 
     /**
      * Create a new job instance.
      *
-     * @param Action  $action
-     * @param array $data
+     * @param \Amethyst\Actions\Action  $action
+     * @param Closure $next
+     * @param \Railken\Bag $data
      */
-    public function __construct(Action $action, array $data = [])
+    public function __construct(BaseAction $action, Closure $next, Bag $data = [])
     {
         $this->action = $action;
+        $this->next = $next;
         $this->data = $data;
     }
 
@@ -38,16 +43,7 @@ class Action implements ShouldQueue
      */
     public function handle()
     {
-        $action = $this->action;
-        $data = $this->data;
-
-        $generator = new Generators\TextGenerator();
-
-        $payload = json_decode(strval(json_encode(Yaml::parse($generator->generateAndRender($action->payload, $data)))));
-
-        $actioner = new $payload->class();
-        $method = $payload->method;
-
-        $actioner->$method(...$payload->arguments);
+        $this->action->storeState('running');
+        $this->action->handle($next, $data);
     }
 }
