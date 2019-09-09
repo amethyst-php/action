@@ -14,7 +14,7 @@ class CreateActionsTable extends Migration
     {
         Schema::create(Config::get('amethyst.action.data.action.table'), function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name')->unique();
+            $table->string('name')->index();
             $table->text('description')->nullable();
             $table->text('payload');
             $table->timestamps();
