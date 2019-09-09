@@ -3,14 +3,12 @@
 namespace Amethyst\Jobs;
 
 use Amethyst\Actions\Action as BaseAction;
+use Closure;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Railken\Template\Generators;
-use Symfony\Component\Yaml\Yaml;
-use Closure;
 use Railken\Bag;
 
 class Action implements ShouldQueue
@@ -27,9 +25,9 @@ class Action implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param \Amethyst\Actions\Action  $action
-     * @param Closure $next
-     * @param \Railken\Bag $data
+     * @param \Amethyst\Actions\Action $action
+     * @param Closure                  $next
+     * @param \Railken\Bag             $data
      */
     public function __construct(BaseAction $action, Closure $next, Bag $data = [])
     {

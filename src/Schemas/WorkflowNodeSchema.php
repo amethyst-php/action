@@ -2,9 +2,9 @@
 
 namespace Amethyst\Schemas;
 
+use Amethyst\Managers\WorkflowManager;
 use Railken\Lem\Attributes;
 use Railken\Lem\Schema;
-use Amethyst\Managers\WorkflowManager;
 
 class WorkflowNodeSchema extends Schema
 {

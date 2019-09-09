@@ -2,12 +2,12 @@
 
 namespace Amethyst\Providers;
 
-use Amethyst\Common\CommonServiceProvider;
 use Amethyst\Actions;
+use Amethyst\Common\CommonServiceProvider;
 
 class ActionServiceProvider extends CommonServiceProvider
-{   
-	/**
+{
+    /**
      * @inherit
      */
     public function register()
@@ -22,11 +22,11 @@ class ActionServiceProvider extends CommonServiceProvider
     }
 
     /**
-	 * @inherit
-	 */
-	public function boot()
+     * @inherit
+     */
+    public function boot()
     {
-    	parent::boot();
+        parent::boot();
 
         app('amethyst')->pushMorphRelation('workflow-node', 'target', 'workflow');
         app('amethyst')->pushMorphRelation('workflow-node', 'target', 'action');

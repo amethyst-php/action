@@ -3,9 +3,9 @@
 namespace Amethyst\Managers;
 
 use Amethyst\Common\ConfigurableManager;
-use Railken\Lem\Manager;
 use Amethyst\Jobs\Action as Job;
 use Amethyst\Models\Action;
+use Railken\Lem\Manager;
 
 class ActionManager extends Manager
 {
@@ -19,8 +19,8 @@ class ActionManager extends Manager
     /**
      * Dispatch a work.
      *
-     * @param Action  $action
-     * @param array $data
+     * @param Action $action
+     * @param array  $data
      */
     public function dispatch(Action $action, array $data = [])
     {

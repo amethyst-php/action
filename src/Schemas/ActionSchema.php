@@ -3,8 +3,8 @@
 namespace Amethyst\Schemas;
 
 use Railken\Lem\Attributes;
-use Railken\Lem\Schema;
 use Railken\Lem\Contracts\EntityContract;
+use Railken\Lem\Schema;
 
 class ActionSchema extends Schema
 {

@@ -14,7 +14,7 @@ class DummyEvent
     public function getData()
     {
         return [
-            'message' => $this->message
+            'message' => $this->message,
         ];
     }
 }
