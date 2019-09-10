@@ -22,8 +22,9 @@ class WorkflowStateSchema extends Schema
                 ->setRelationManager(WorkflowManager::class)
                 ->setRequired(true),
             Attributes\EnumAttribute::make('state', [
-                'running',
-                'executed',
+                'wait',
+                'run',
+                'done',
             ])->setRequired(true),
             Attributes\LongTextAttribute::make('data'),
             Attributes\CreatedAtAttribute::make(),

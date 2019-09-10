@@ -3,18 +3,22 @@
 namespace Amethyst\Actions;
 
 use Closure;
-use Illuminate\Support\Facades\Event;
 use Railken\Bag;
+use Amethyst\Models\WorkflowNode;
+use Amethyst\Models\WorkflowNodeState;
+use Amethyst\Models\WorkflowState;
 
 class Listener extends Action
 {
-    public function handle(Closure $next, Bag $data)
+    public function handle(Bag $data, WorkflowNode $workflowNode, WorkflowNodeState $nodeState = null)
     {
-        Event::listen([$this->data->event], function ($event_name, $events) use ($next, $data) {
-            print_r('Yolo');
-            die();
+    	$this->id = $nodeState ? "S".$nodeState->id : "N".$workflowNode->id;
 
-            $next($data->merge(new Bag($events[0]->getData())));
+        $this->addEvent($this->id, $data->event, function ($event) use ($data) {
+            $this->done($data->merge(new Bag(['event' => $event])));
+            $this->removeEvent($this->id);
         });
+
+        $this->release($data);
     }
 }

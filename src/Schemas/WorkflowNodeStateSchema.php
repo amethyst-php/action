@@ -27,10 +27,11 @@ class WorkflowNodeStateSchema extends Schema
                 ->setRelationManager(WorkflowNodeManager::class)
                 ->setRequired(true),
             Attributes\EnumAttribute::make('state', [
-                'idle',
-                'executed',
+                'wait',
+                'run',
+                'done',
             ])->setRequired(true),
-            Attributes\LongTextAttribute::make('data'),
+            Attributes\ObjectAttribute::make('data'),
             Attributes\LongTextAttribute::make('input'),
             Attributes\LongTextAttribute::make('output'),
             Attributes\CreatedAtAttribute::make(),

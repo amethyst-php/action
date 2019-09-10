@@ -29,7 +29,7 @@ class Action implements ShouldQueue
      * @param Closure                  $next
      * @param \Railken\Bag             $data
      */
-    public function __construct(BaseAction $action, Closure $next, Bag $data = [])
+    public function __construct(BaseAction $action, Closure $next, Bag $data)
     {
         $this->action = $action;
         $this->next = $next;

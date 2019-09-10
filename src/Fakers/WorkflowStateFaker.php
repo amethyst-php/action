@@ -17,7 +17,7 @@ class WorkflowStateFaker extends Faker
 
         $bag = new Bag();
         $bag->set('workflow', WorkflowFaker::make()->parameters()->toArray());
-        $bag->set('state', 'running');
+        $bag->set('state', 'run');
 
         return $bag;
     }

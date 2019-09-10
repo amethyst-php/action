@@ -20,6 +20,10 @@ class WorkflowSchema extends Schema
                 ->setRequired(true)
                 ->setUnique(true),
             Attributes\LongTextAttribute::make('description'),
+            Attributes\BooleanAttribute::make('enabled')
+                ->setDefault(function ($entity) {
+                    return 1;
+                }),
             Attributes\CreatedAtAttribute::make(),
             Attributes\UpdatedAtAttribute::make(),
             Attributes\DeletedAtAttribute::make(),

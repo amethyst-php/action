@@ -22,6 +22,7 @@ class CreateWorkflowNodesTable extends Migration
             $table->integer('target_id')->unsigned();
 
             $table->text('data')->nullable();
+            $table->text('output')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

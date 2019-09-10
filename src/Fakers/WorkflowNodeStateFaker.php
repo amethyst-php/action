@@ -18,7 +18,7 @@ class WorkflowNodeStateFaker extends Faker
         $bag = new Bag();
         $bag->set('workflow_node', WorkflowNodeFaker::make()->parameters()->toArray());
         $bag->set('workflow_state', WorkflowStateFaker::make()->parameters()->toArray());
-        $bag->set('state', 'idle');
+        $bag->set('state', 'wait');
         $bag->set('data', serialize(['x' => 1]));
         $bag->set('input', serialize(['x' => 1]));
         $bag->set('output', serialize(['x' => 1]));

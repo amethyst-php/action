@@ -2,10 +2,11 @@
 
 namespace Amethyst\Services;
 
-use Amethyst\Managers\AggregatorManager;
+use Amethyst\Managers\RelationManager;
 use Amethyst\Managers\WorkflowNodeManager;
 use Amethyst\Managers\WorkflowNodeStateManager;
 use Amethyst\Managers\WorkflowStateManager;
+use Amethyst\Models\Relation;
 use Railken\Bag;
 use Symfony\Component\Yaml\Yaml;
 
@@ -17,7 +18,8 @@ class Action
     {
         $this->workflowNodeStateManager = new WorkflowNodeStateManager();
         $this->workflowStateManager = new WorkflowStateManager();
-        $this->aggregatorManager = new AggregatorManager();
+        $this->relationManager = new RelationManager();
+        $this->workflowNodeManager = new WorkflowNodeManager();
     }
 
     public function addType(string $name, string $class)
@@ -32,81 +34,168 @@ class Action
 
     public function starter()
     {
-        $workflowNodeManager = new WorkflowNodeManager();
-
-        $aggregators = $this->aggregatorManager->getRepository()->newQuery()->where('source_type', 'workflow')->get();
-
-        $aggregators->filter(function ($aggregator) {
-            return $aggregator->source->enabled;
-        });
-
-        $this->dispatchByAggregators($aggregators, null);
-
+        $this->dispatchByRelations();
         $this->dispatchByWorkflowNodeState();
     }
 
-    public function dispatchByAggregators($aggregators, $workflowState)
+    public function dispatchByRelations()
     {
-        $aggregators->map(function ($aggregator) use ($workflowState) {
-            return $this->dispatch($aggregator->aggregate, $workflowState);
-        });
+        $this->relationManager
+            ->getRepository()
+            ->newQuery()
+            ->where('source_type', 'workflow')
+            ->where('target_type', 'workflow-node')
+            ->get()
+            ->filter(function ($relation) {
+                return $relation->source->enabled;
+            })->map(function ($relation) {
+                return $this->dispatch($relation->target);
+            });
     }
 
     public function dispatchByWorkflowNodeState()
     {
-        $states = $this->workflowNodeStateManager->getRepository()
+        $this->workflowNodeStateManager
+            ->getRepository()
             ->newQuery()
-            ->where('state', 'idle');
+            ->where('state', 'wait')
+            ->get()
+            ->map(function ($workflowNodeState) {
+                return $this->dispatch($workflowNodeState->workflow_node, $workflowNodeState);
+            });
     }
 
-    public function dispatch($workflowNode, $workflowState)
+    public function dispatchBySameWorkflowNodeState($workflowState)
     {
+        $this->workflowNodeStateManager
+            ->getRepository()
+            ->newQuery()
+            ->where('workflow_state_id', $workflowState->id)
+            ->where('state', 'wait')
+            ->get()
+            ->map(function ($workflowNodeState) {
+                return $this->dispatch($workflowNodeState->workflow_node, $workflowNodeState);
+            });
+    }
+
+    public function dispatch($workflowNode, $workflowNodeState = null)
+    {
+        \Log::info(sprintf("Workflow - Dispatching WorkflowNode: %s with state %s", $workflowNode->id, $workflowNodeState->id ?? null));
+
+        // This is currently running
+        // Doing this way well'avoid to re-execute twice the same worfklow
+        if ($workflowNodeState) {
+            $workflowNodeState->state = 'run';
+            $workflowNodeState->save();
+        }
+
         $data = $workflowNode->data;
 
         $action = $workflowNode->target;
 
         $payload = (object) Yaml::parse($action->payload);
 
-        print_r($payload);
+        if (!isset($payload->class)) {
+            \Log::warning(sprintf("Error with workflow, missing class"));
+            return;
+        }
 
         $class = $this->getType($payload->class);
 
-        $actioner = new $class(...$payload->arguments);
+        $executed = function ($data) use ($workflowNode, $workflowNodeState) {
 
-        $data = Yaml::parse($workflowNode->data);
+            \Log::info(sprintf("Workflow - Executing WorkflowNode: %s with state %s", $workflowNode->id, $workflowNodeState->id ?? null));
+
+            // Define a new state for the workflow
+
+            if (!$workflowNodeState) {
+                $workflowState = $this->workflowStateManager->createOrFail([
+                    'workflow_id'       => $workflowNode->workflow->id,
+                    'state'             => 'run',
+                ])->getResource();
+            } else {
+                $workflowState = $workflowNodeState->workflow_state;
+            }
+
+            // Data is filtered based on output workflowNode
+            $output = (array) Yaml::parse((string) $workflowNode->output);
+            $data = $data->only($output);
+
+            // Define a new state for the node as done
+            // First time executed, already done
+            if (!$workflowNodeState) {
+                $workflowNodeState = $this->workflowNodeStateManager->createOrFail([
+                    'workflow_node_id'  => $workflowNode->id,
+                    'workflow_state_id' => $workflowState->id,
+                    'state'             => 'done',
+                    'data'              => $data->toArray()
+                ])->getResource();
+            } else {
+                $workflowNodeState->data = $data->toArray();
+                $workflowNodeState->state = 'done';
+                $workflowNodeState->save();
+            }
+
+            // Set all next nodes as idles
+            $nextNodes = (new Relation)
+                ->where('source_type', 'workflow-node')
+                ->where('source_id', $workflowNode->id)
+                ->where('target_type', 'workflow-node')
+                ->get();
+                
+            // If there is no next nodes, than the workflow instance should be terminated
+            if ($nextNodes->count() === 0) {
+
+                \Log::info(sprintf("Workflow - Terminating %s", $workflowNode->workflow->id));
+
+                $workflowState->state = 'done';
+                $workflowState->save();
+            }
+
+            $nextNodes->map(function ($relation) use ($workflowState, $data) {
+
+                $workflowNode = $relation->target;
+
+                \Log::info(sprintf("Workflow - Activating siblings WorkflowNode: %s", $workflowNode->id));
+
+                $this->workflowNodeStateManager->createOrFail([
+                    'workflow_node_id'  => $workflowNode->id,
+                    'workflow_state_id' => $workflowState->id,
+                    'state'             => 'wait',
+                    'data'              => $data->toArray()
+                ]);
+            });
+
+            // We now have a situation where the actioner is handled, with a node state already executed
+            // and the overall workflow state in running
+
+            // We know know that this workflow instance has moved, we can check immediately if the next
+            // Node is available for dispatching instead of waiting the call of `starter`
+            $this->dispatchBySameWorkflowNodeState($workflowState);
+        };
+
+        $released = function ($data) use ($workflowNodeState) {
+
+            if ($workflowNodeState) {
+                \Log::info(sprintf("Terminating - Executing WorkflowNode: %s with state %s", $workflowNodeState->workflow_node->id, $workflowNodeState->id ?? null));
+
+                if ($workflowNodeState) {
+                    $workflowNodeState->state = 'wait';
+                    $workflowNodeState->data = $data->toArray();
+                    $workflowNodeState->save();
+                }
+            }
+
+        };
+
+        $actioner = new $class($executed, $released);
+
+        $parsed = Yaml::parse((string) $workflowNode->data);
+        $data = new Bag($parsed ?? []);
+        $data = $data->merge($workflowNodeState ? $workflowNodeState->data : []);
+
         $actioner->setData($data);
 
-        // If a workflowState is defined than this is not the first time
-        // we hit this workflow instance, let's create
-        if ($workflowState) {
-            $this->workflowNodeStateManager->createOrFail([
-                'workflow_node_id'  => $workflowNode->id,
-                'workflow_state_id' => $workflowState->id,
-                'state'             => 'idle',
-            ]);
-        }
-
-        $actioner->dispatch(function ($data) use ($workflowNode) {
-            $workflowState = $this->workflowStateManager->updateOrCreateOrFail([
-                'workflow_id' => $workflow->id,
-            ], [
-                'state' => 'running',
-            ])->getResource();
-
-            $workflowNodeState = $this->workflowNodeStateManager->updateOrCreateOrFail([
-                'workflow_node_id'  => $workflowNode->id,
-                'workflow_state_id' => $workflowState->id,
-            ], [
-                'state' => 'executed',
-            ])->getResource();
-
-            return $this->dispatchByAggregators($this->aggregatorManager
-                ->getRepository()
-                ->newQuery()
-                ->where('source_type', 'workflow-node')
-                ->where('source_id', $workflowNode)
-                ->where('aggregate_type', 'workflow-node')
-                ->get(), $workflowState);
-        }, new Bag());
+        $actioner->handle($data, $workflowNode, $workflowNodeState ? $workflowNodeState : null);
     }
 }

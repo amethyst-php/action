@@ -14,7 +14,8 @@ class ActionServiceProvider extends CommonServiceProvider
     {
         parent::register();
 
-        $this->app->register(\Amethyst\Providers\AggregatorServiceProvider::class);
+        $this->app->register(\Amethyst\Providers\RelationServiceProvider::class);
+        $this->app->register(\Railken\Template\TemplateServiceProvider::class);
 
         $this->app->singleton('amethyst.action', function ($app) {
             return new \Amethyst\Services\Action();
@@ -28,15 +29,18 @@ class ActionServiceProvider extends CommonServiceProvider
     {
         parent::boot();
 
+
         app('amethyst')->pushMorphRelation('workflow-node', 'target', 'workflow');
         app('amethyst')->pushMorphRelation('workflow-node', 'target', 'action');
 
-        app('amethyst')->pushMorphRelation('aggregator', 'source', 'workflow-node');
-        app('amethyst')->pushMorphRelation('aggregator', 'aggregate', 'workflow-node');
-        app('amethyst')->pushMorphRelation('aggregator', 'source', 'workflow');
-        app('amethyst')->pushMorphRelation('aggregator', 'aggregate', 'workflow');
+        app('amethyst')->pushMorphRelation('relation', 'source', 'workflow-node');
+        app('amethyst')->pushMorphRelation('relation', 'target', 'workflow-node');
+        app('amethyst')->pushMorphRelation('relation', 'source', 'workflow');
+        app('amethyst')->pushMorphRelation('relation', 'target', 'workflow');
 
         app('amethyst.action')->addType('log', Actions\Log::class);
         app('amethyst.action')->addType('listener', Actions\Listener::class);
+
+        app('amethyst.action')->starter();
     }
 }

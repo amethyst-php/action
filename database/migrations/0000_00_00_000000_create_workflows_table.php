@@ -16,6 +16,7 @@ class CreateWorkflowsTable extends Migration
             $table->increments('id');
             $table->string('name')->index();
             $table->text('description')->nullable();
+            $table->boolean('enabled');
             $table->timestamps();
             $table->softDeletes();
         });

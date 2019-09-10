@@ -3,10 +3,10 @@
 namespace Amethyst\Tests;
 
 use Amethyst\Managers\ActionManager;
-use Amethyst\Managers\AggregatorManager;
+use Amethyst\Managers\RelationManager;
 use Amethyst\Managers\WorkflowManager;
 use Amethyst\Managers\WorkflowNodeManager;
-use App\Events\DummyEvent;
+use Amethyst\Tests\DummyEvent;
 use Symfony\Component\Yaml\Yaml;
 
 class StateTest extends BaseTest
@@ -19,7 +19,7 @@ class StateTest extends BaseTest
         $actionManager = new ActionManager();
         $workflowManager = new WorkflowManager();
         $workflowNodeManager = new WorkflowNodeManager();
-        $aggregatorManager = new AggregatorManager();
+        $relationManager = new RelationManager();
 
         $logAction = $actionManager->createOrFail([
             'name'    => 'Log',
@@ -48,28 +48,37 @@ class StateTest extends BaseTest
             'data'        => Yaml::dump([
                 'event' => DummyEvent::class,
             ]),
+            'output'       => Yaml::dump(['event', 'template']),
         ])->getResource();
 
         $node2 = $workflowNodeManager->createOrFail([
             'workflow_id' => $workflow->id,
             'target_type' => 'action',
             'target_id'   => $logAction->id,
+            'data'        => Yaml::dump([
+                'template' => 'Il contenuto del tuo log è: {{ event.message }}'
+            ])
         ])->getResource();
 
-        $aggregatorManager->createOrFail([
-            'source_type'    => 'workflow-node',
-            'source_id'      => $node1->id,
-            'aggregate_type' => 'workflow-node',
-            'aggregate_id'   => $node2->id,
-        ]);
-
-        $aggregatorManager->createOrFail([
+        $relationManager->createOrFail([
             'source_type'    => 'workflow',
             'source_id'      => $workflow->id,
-            'aggregate_type' => 'workflow-node',
-            'aggregate_id'   => $node1->id,
+            'target_type' => 'workflow-node',
+            'target_id'   => $node1->id,
         ]);
 
-        app('amethyst.action')->starter();
+        $relationManager->createOrFail([
+            'source_type'    => 'workflow-node',
+            'source_id'      => $node1->id,
+            'target_type' => 'workflow-node',
+            'target_id'   => $node2->id,
+        ]);
+
+        // Execute actions
+
+        // Checking logs
+
+        event(new DummyEvent('Yeah!'));
+
     }
 }
