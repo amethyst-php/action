@@ -10,7 +10,7 @@ use Amethyst\Models\WorkflowNodeState;
 use Amethyst\Models\WorkflowState;
 use Amethyst\Models\WorkflowNode;
 
-abstract class Action
+class Action
 {
     protected $data;
     protected static $events;
@@ -48,20 +48,19 @@ abstract class Action
 
         self::$booted = true;
 
+
         self::$events = Collection::make();
 
         Event::listen(['*'], function ($event, $events) {
 
             $event = $events[0];
-            
-            $action = self::$events->first(function ($evt) use ($event) {
+    
+            self::$events->filter(function ($evt) use ($event) {
                 return $evt->class === get_class($event);
-            });
-
-            if ($action) {
+            })->map(function ($action) use ($event) {
                 $closure = $action->execute;
                 $closure($event);
-            }
+            });
         });
     }
 
@@ -82,14 +81,6 @@ abstract class Action
     {
         return self::$events;
     }
-
-    /**
-     * @param WorkflowNodeState $state
-     * @param Closure $executed Should be called when the action is terminated
-     * @param Closure $releases Should be called when the action is released
-     * @param Bag $data Data at the moment
-     */
-    abstract public function handle(Bag $data, WorkflowNode $workflowNode, WorkflowNodeState $nodeState = null);
 
     /**
      * Destroy the current action

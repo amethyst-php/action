@@ -13,6 +13,7 @@ use Symfony\Component\Yaml\Yaml;
 class Action
 {
     protected $types = [];
+    protected $enabled = false;
 
     public function __construct()
     {
@@ -20,6 +21,11 @@ class Action
         $this->workflowStateManager = new WorkflowStateManager();
         $this->relationManager = new RelationManager();
         $this->workflowNodeManager = new WorkflowNodeManager();
+    }
+
+    public function enable()
+    {
+        $this->enabled = true;
     }
 
     public function addType(string $name, string $class)
@@ -34,19 +40,23 @@ class Action
 
     public function starter()
     {
+        \Log::info("Workflow - Checking");
         $this->dispatchByRelations();
         $this->dispatchByWorkflowNodeState();
     }
 
     public function dispatchByRelations()
     {
-        $this->relationManager
+        $results = $this->relationManager
             ->getRepository()
             ->newQuery()
             ->where('source_type', 'workflow')
             ->where('target_type', 'workflow-node')
-            ->get()
-            ->filter(function ($relation) {
+            ->get();
+
+        \Log::info(sprintf("Workflow - Checking relations to start: %s", $results->count()));
+
+        $results->filter(function ($relation) {
                 return $relation->source->enabled;
             })->map(function ($relation) {
                 return $this->dispatch($relation->target);
@@ -80,7 +90,12 @@ class Action
 
     public function dispatch($workflowNode, $workflowNodeState = null)
     {
-        \Log::info(sprintf("Workflow - Dispatching WorkflowNode: %s with state %s", $workflowNode->id, $workflowNodeState->id ?? null));
+        \Log::info(sprintf(
+            "Workflow - Dispatching Workflow %s, WorkflowNode: %s with state %s", 
+            $workflowNode->workflow->id,
+            $workflowNode->id, 
+            $workflowNodeState->id ?? null
+        ));
 
         // This is currently running
         // Doing this way well'avoid to re-execute twice the same worfklow
@@ -104,10 +119,14 @@ class Action
 
         $executed = function ($data) use ($workflowNode, $workflowNodeState) {
 
-            \Log::info(sprintf("Workflow - Executing WorkflowNode: %s with state %s", $workflowNode->id, $workflowNodeState->id ?? null));
+            \Log::info(sprintf(
+                "Workflow - Executing Workflow %s, WorkflowNode: %s with state %s", 
+                $workflowNode->workflow->id,
+                $workflowNode->id, 
+                $workflowNodeState->id ?? null
+            ));
 
             // Define a new state for the workflow
-
             if (!$workflowNodeState) {
                 $workflowState = $this->workflowStateManager->createOrFail([
                     'workflow_id'       => $workflowNode->workflow->id,
@@ -156,7 +175,11 @@ class Action
 
                 $workflowNode = $relation->target;
 
-                \Log::info(sprintf("Workflow - Activating siblings WorkflowNode: %s", $workflowNode->id));
+                \Log::info(sprintf(
+                    "Workflow - Activating siblings Workflow %s, WorkflowNode: %s", 
+                    $workflowNode->workflow->id,
+                    $workflowNode->id
+                ));
 
                 $this->workflowNodeStateManager->createOrFail([
                     'workflow_node_id'  => $workflowNode->id,

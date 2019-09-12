@@ -4,6 +4,12 @@ namespace Amethyst\Providers;
 
 use Amethyst\Actions;
 use Amethyst\Common\CommonServiceProvider;
+use Amethyst\Models\Workflow;
+use Amethyst\Models\Relation;
+use Amethyst\Models\WorkflowNode;
+use Amethyst\Observers\WorkflowObserver;
+use Amethyst\Observers\WorkflowNodeObserver;
+use Amethyst\Observers\RelationObserver;
 
 class ActionServiceProvider extends CommonServiceProvider
 {
@@ -29,7 +35,6 @@ class ActionServiceProvider extends CommonServiceProvider
     {
         parent::boot();
 
-
         app('amethyst')->pushMorphRelation('workflow-node', 'target', 'workflow');
         app('amethyst')->pushMorphRelation('workflow-node', 'target', 'action');
 
@@ -40,7 +45,12 @@ class ActionServiceProvider extends CommonServiceProvider
 
         app('amethyst.action')->addType('log', Actions\Log::class);
         app('amethyst.action')->addType('listener', Actions\Listener::class);
+        app('amethyst.action')->addType('data', Actions\Manager::class);
 
-        app('amethyst.action')->starter();
+        Actions\Action::boot();
+
+        Workflow::observe(WorkflowObserver::class);
+        WorkflowNode::observe(WorkflowNodeObserver::class);
+        Relation::observe(RelationObserver::class);
     }
 }

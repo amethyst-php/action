@@ -10,6 +10,7 @@
         "railken/template": "^1.0"
     },
     "require-dev": {
+        "amethyst/foo": "0.1.*",
         "phpunit/phpunit": "7.*",
         "orchestra/testbench": "3.*"
     },

@@ -21,10 +21,10 @@ class StateTest extends BaseTest
         $workflowNodeManager = new WorkflowNodeManager();
         $relationManager = new RelationManager();
 
-        $logAction = $actionManager->createOrFail([
-            'name'    => 'Log',
+        $dataAction = $actionManager->createOrFail([
+            'name'    => 'Data Manipulation',
             'payload' => Yaml::dump([
-                'class'     => 'log',
+                'class'     => 'data',
                 'arguments' => [],
             ]),
         ])->getResource();
@@ -48,15 +48,19 @@ class StateTest extends BaseTest
             'data'        => Yaml::dump([
                 'event' => DummyEvent::class,
             ]),
-            'output'       => Yaml::dump(['event', 'template']),
+            'output'       => Yaml::dump(['event']),
         ])->getResource();
 
         $node2 = $workflowNodeManager->createOrFail([
             'workflow_id' => $workflow->id,
             'target_type' => 'action',
-            'target_id'   => $logAction->id,
+            'target_id'   => $dataAction->id,
             'data'        => Yaml::dump([
-                'template' => 'Il contenuto del tuo log è: {{ event.message }}'
+                'name' => 'foo',
+                'action'   => 'create',
+                'parameters' => [
+                    'name' => "{{ event.message }}",
+                ]
             ])
         ])->getResource();
 
@@ -74,11 +78,53 @@ class StateTest extends BaseTest
             'target_id'   => $node2->id,
         ]);
 
-        // Execute actions
-
-        // Checking logs
 
         event(new DummyEvent('Yeah!'));
+        event(new DummyEvent('Not Anymore!'));
 
+        \Log::info("Creating second workflow");
+
+        $workflow = $workflowManager->createOrFail([
+            'name' => 'Should work with 2 workflow',
+        ])->getResource();
+
+        $node1 = $workflowNodeManager->createOrFail([
+            'workflow_id' => $workflow->id,
+            'target_type' => 'action',
+            'target_id'   => $eventListenerAction->id,
+            'data'        => Yaml::dump([
+                'event' => DummyEvent::class,
+            ]),
+            'output'       => Yaml::dump(['event']),
+        ])->getResource();
+
+        $node2 = $workflowNodeManager->createOrFail([
+            'workflow_id' => $workflow->id,
+            'target_type' => 'action',
+            'target_id'   => $dataAction->id,
+            'data'        => Yaml::dump([
+                'name' => 'foo',
+                'action'   => 'create',
+                'parameters' => [
+                    'name' => "This is a random name {{ event.message }}",
+                ]
+            ])
+        ])->getResource();
+
+        $relationManager->createOrFail([
+            'source_type'    => 'workflow',
+            'source_id'      => $workflow->id,
+            'target_type' => 'workflow-node',
+            'target_id'   => $node1->id,
+        ]);
+
+        $relationManager->createOrFail([
+            'source_type'    => 'workflow-node',
+            'source_id'      => $node1->id,
+            'target_type' => 'workflow-node',
+            'target_id'   => $node2->id,
+        ]);
+        
+        event(new DummyEvent('Double!'));
     }
 }
