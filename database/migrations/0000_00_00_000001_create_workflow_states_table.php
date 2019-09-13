@@ -19,7 +19,7 @@ class CreateWorkflowStatesTable extends Migration
             $table->foreign('workflow_id')->references('id')->on(Config::get('amethyst.action.data.workflow.table'));
 
             $table->string('state');
-            $table->text('data')->nullable();
+            $table->binary('data')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

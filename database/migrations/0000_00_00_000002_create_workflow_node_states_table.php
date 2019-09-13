@@ -22,7 +22,7 @@ class CreateWorkflowNodeStatesTable extends Migration
             $table->foreign('workflow_node_id')->references('id')->on(Config::get('amethyst.action.data.workflow-node.table'));
 
             $table->string('state');
-            $table->text('data')->nullable();
+            $table->longText('data')->nullable();
             $table->text('input')->nullable();
             $table->text('output')->nullable();
             $table->timestamps();

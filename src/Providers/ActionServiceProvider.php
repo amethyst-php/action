@@ -46,6 +46,8 @@ class ActionServiceProvider extends CommonServiceProvider
         app('amethyst.action')->addType('log', Actions\Log::class);
         app('amethyst.action')->addType('listener', Actions\Listener::class);
         app('amethyst.action')->addType('data', Actions\Manager::class);
+        app('amethyst.action')->addType('switcher', Actions\Switcher::class);
+        app('amethyst.action')->addType('http', Actions\Http::class);
 
         Actions\Action::boot();
 

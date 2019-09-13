@@ -23,10 +23,10 @@ class Action
         self::boot();
     }
 
-    public function done(Bag $data)
+    public function done(Bag $data, $nodes = null)
     {
         $closure = $this->executed;
-        $closure($data);
+        $closure($data, $nodes);
     }
 
     public function release(Bag $data)

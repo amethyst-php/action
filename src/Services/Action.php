@@ -117,7 +117,7 @@ class Action
 
         $class = $this->getType($payload->class);
 
-        $executed = function ($data) use ($workflowNode, $workflowNodeState) {
+        $executed = function ($data, $allowedNextNodes = null) use ($workflowNode, $workflowNodeState) {
 
             \Log::info(sprintf(
                 "Workflow - Executing Workflow %s, WorkflowNode: %s with state %s", 
@@ -169,6 +169,12 @@ class Action
 
                 $workflowState->state = 'done';
                 $workflowState->save();
+            }
+
+            if ($allowedNextNodes !== null) {
+                $nextNodes = $nextNodes->filter(function ($relation) use ($allowedNextNodes) {
+                    return in_array($relation->target->id, $allowedNextNodes->toArray());
+                });
             }
 
             $nextNodes->map(function ($relation) use ($workflowState, $data) {
