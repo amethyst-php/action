@@ -4,7 +4,7 @@ namespace Amethyst\Actions;
 
 use Closure;
 use Illuminate\Support\Facades\Log as Logger;
-use Railken\Bag;
+use Amethyst\Services\Bag;
 use Railken\Template\Generators\TextGenerator;
 use Amethyst\Models\WorkflowNodeState;
 use Amethyst\Models\WorkflowState;

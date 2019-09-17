@@ -3,7 +3,7 @@
 namespace Amethyst\Actions;
 
 use Closure;
-use Railken\Bag;
+use Amethyst\Services\Bag;
 use Railken\Template\Generators\TextGenerator;
 use Amethyst\Models\WorkflowNodeState;
 use Amethyst\Models\WorkflowState;
@@ -35,11 +35,18 @@ class Http extends Action
             'handler'     => $handler,
         ]);
 
-        $response = $client->request($data->get('method'), $data->get('url'), [
+
+        $parameters = [
             'headers' => $data->get('headers'),
             'form_params'    => $data->get('body'),
             'query'    => $data->get('query'),
-        ]);
+        ];
+
+        if ($data->get('json')) {
+            $parameters = array_merge($parameters, [\GuzzleHttp\RequestOptions::JSON => $data->get('json')]);
+        }
+
+        $response = $client->request($data->get('method'), $data->get('url'), $parameters);
 
         $body = $response->getBody()->getContents();
 

@@ -7,7 +7,7 @@ use Amethyst\Managers\WorkflowNodeManager;
 use Amethyst\Managers\WorkflowNodeStateManager;
 use Amethyst\Managers\WorkflowStateManager;
 use Amethyst\Models\Relation;
-use Railken\Bag;
+use Amethyst\Services\Bag;
 use Symfony\Component\Yaml\Yaml;
 
 class Action
@@ -57,10 +57,10 @@ class Action
         \Log::info(sprintf("Workflow - Checking relations to start: %s", $results->count()));
 
         $results->filter(function ($relation) {
-                return $relation->source->enabled;
-            })->map(function ($relation) {
-                return $this->dispatch($relation->target);
-            });
+            return $relation->source->enabled;
+        })->map(function ($relation) {
+            return $this->dispatch($relation->target);
+        });
     }
 
     public function dispatchByWorkflowNodeState()
@@ -140,6 +140,7 @@ class Action
             $output = (array) Yaml::parse((string) $workflowNode->output);
             $data = $data->only($output);
 
+
             // Define a new state for the node as done
             // First time executed, already done
             if (!$workflowNodeState) {
@@ -147,10 +148,10 @@ class Action
                     'workflow_node_id'  => $workflowNode->id,
                     'workflow_state_id' => $workflowState->id,
                     'state'             => 'done',
-                    'data'              => $data->toArray()
+                    'data'              => serialize($data)
                 ])->getResource();
             } else {
-                $workflowNodeState->data = $data->toArray();
+                $workflowNodeState->data = serialize($data);
                 $workflowNodeState->state = 'done';
                 $workflowNodeState->save();
             }
@@ -191,7 +192,7 @@ class Action
                     'workflow_node_id'  => $workflowNode->id,
                     'workflow_state_id' => $workflowState->id,
                     'state'             => 'wait',
-                    'data'              => $data->toArray()
+                    'data'              => serialize($data)
                 ]);
             });
 
@@ -210,7 +211,7 @@ class Action
 
                 if ($workflowNodeState) {
                     $workflowNodeState->state = 'wait';
-                    $workflowNodeState->data = $data->toArray();
+                    $workflowNodeState->data = serialize($data);
                     $workflowNodeState->save();
                 }
             }
@@ -221,7 +222,7 @@ class Action
 
         $parsed = Yaml::parse((string) $workflowNode->data);
         $data = new Bag($parsed ?? []);
-        $data = $data->merge($workflowNodeState ? $workflowNodeState->data : []);
+        $data = $data->merge($workflowNodeState ? unserialize($workflowNodeState->data) : []);
 
         $actioner->setData($data);
 

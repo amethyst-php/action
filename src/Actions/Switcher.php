@@ -4,7 +4,7 @@ namespace Amethyst\Actions;
 
 use Closure;
 use Illuminate\Support\Facades\Log as Logger;
-use Railken\Bag;
+use Amethyst\Services\Bag;
 use Railken\Template\Generators\TextGenerator;
 use Amethyst\Models\WorkflowNodeState;
 use Amethyst\Models\WorkflowState;
@@ -27,11 +27,16 @@ class Switcher extends Action
                 return $relation->target;
             });
 
+
+        \Log::info(sprintf("Workflow - Switcher: %s, checking channels: %s, %s", $workflowNode->id, $nextNodes->count(), json_encode($data->channels)));
+
         // For each sibling compare id and condition
         $nextNodes = $nextNodes->filter(function (WorkflowNode $sibling) use ($generator, $data) {
             $expression = $generator->generateAndRender($data->channels[$sibling->id], $data->toArray());
 
-            print_r($expression);
+            print_r($data->get('event'));
+            \Log::info(sprintf("Workflow - Switcher: %s, %s", $sibling->id, $expression));
+
             $rule = new Rule($expression, []);
 
             return $rule->isTrue();

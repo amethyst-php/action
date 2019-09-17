@@ -3,7 +3,7 @@
 namespace Amethyst\Actions;
 
 use Closure;
-use Railken\Bag;
+use Amethyst\Services\Bag;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
 use Amethyst\Models\WorkflowNodeState;
@@ -51,12 +51,17 @@ class Action
 
         self::$events = Collection::make();
 
-        Event::listen(['*'], function ($event, $events) {
+        Event::listen(['*'], function ($eventName, $events) {
 
             $event = $events[0];
-    
-            self::$events->filter(function ($evt) use ($event) {
-                return $evt->class === get_class($event);
+
+            if (strpos($eventName, 'Delivery') === false) {
+                return;
+            }
+
+            self::$events->filter(function ($evt) use ($eventName) {
+                
+                return $evt->class === $eventName;
             })->map(function ($action) use ($event) {
                 $closure = $action->execute;
                 $closure($event);

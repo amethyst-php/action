@@ -50,6 +50,7 @@ class ActionServiceProvider extends CommonServiceProvider
         app('amethyst.action')->addType('http', Actions\Http::class);
 
         Actions\Action::boot();
+        app('amethyst.action')->starter();
 
         Workflow::observe(WorkflowObserver::class);
         WorkflowNode::observe(WorkflowNodeObserver::class);

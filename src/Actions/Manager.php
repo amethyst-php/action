@@ -4,7 +4,7 @@ namespace Amethyst\Actions;
 
 use Closure;
 use Illuminate\Support\Facades\Log as Logger;
-use Railken\Bag;
+use Amethyst\Services\Bag;
 use Railken\Template\Generators\TextGenerator;
 use Amethyst\Models\WorkflowNodeState;
 use Amethyst\Models\WorkflowState;
@@ -29,10 +29,10 @@ class Manager extends Action
     	}
 
     	if ($data->action === 'update' || $data->action === 'remove') {
-    		$filter = $generator->generateAndRender($data->query, $data->toArray());
+    		$string = $generator->generateAndRender($data->query, $data->toArray());
     		$query = $manager->getRepository()->newQuery();
 
-    		$query = $filter->build($query, $filter);
+    		$filter->build($query, $string);
 
     		foreach ($query->get() as $record) {
 
