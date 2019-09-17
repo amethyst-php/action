@@ -22,28 +22,23 @@ class Http extends Action
     {
         $time = microtime(true);
 
-        $testHandler = new TestHandler();
-
-        $logger = new Logger('guzzle.to.curl');
-        $logger->pushHandler($testHandler);
-
-        $handler = HandlerStack::create();
-        $handler->after('cookies', new CurlFormatterMiddleware($logger));
 
         $client = new \GuzzleHttp\Client([
             'http_errors' => false,
-            'handler'     => $handler,
         ]);
 
+        $generator = new TextGenerator;
+        ;
 
         $parameters = [
-            'headers' => $data->get('headers'),
-            'form_params'    => $data->get('body'),
-            'query'    => $data->get('query'),
+            'headers' => json_decode($generator->generateAndRender(json_encode($data->get('headers', [])), $data->toArray())),
+            'form_params' => json_decode($generator->generateAndRender(json_encode($data->get('body', [])), $data->toArray())),
+            'query'    => json_decode($generator->generateAndRender(json_encode($data->get('query', [])), $data->toArray())),
         ];
 
         if ($data->get('json')) {
-            $parameters = array_merge($parameters, [\GuzzleHttp\RequestOptions::JSON => $data->get('json')]);
+            $parameters = array_merge($parameters, [
+                \GuzzleHttp\RequestOptions::JSON => json_decode($generator->generateAndRender(json_encode($data->get('json', [])), $data->toArray()))]);
         }
 
         $response = $client->request($data->get('method'), $data->get('url'), $parameters);
@@ -54,16 +49,17 @@ class Http extends Action
             $body = json_decode($body);
         }
 
-        $data = new Bag([
-            'response' => [
-                'status'   => $response->getStatusCode(),
-                'time'     => microtime(true) - $time,
-                'testable' => $testHandler->getRecords()[0]['message'],
-                'headers' => $response->getHeaders(), 
-                'body' => $body
-            ],
-        ]);
+        \Log::info(json_encode($parameters));
 
+        $data->set('response', [
+            'url' => $data->get('url'), 
+            'parameters' => $parameters,
+            'status'   => $response->getStatusCode(),
+            'time'     => microtime(true) - $time,
+            'headers' => $response->getHeaders(), 
+            'body' => $body
+        ]);
+        
         $this->done($data);
     }
 }
