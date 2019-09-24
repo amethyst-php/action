@@ -55,10 +55,6 @@ class Action
 
             $event = $events[0];
 
-            if (strpos($eventName, 'Delivery') === false) {
-                return;
-            }
-
             self::$events->filter(function ($evt) use ($eventName) {
                 
                 return $evt->class === $eventName;

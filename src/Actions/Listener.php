@@ -13,7 +13,7 @@ class Listener extends Action
     public function handle(Bag $data, WorkflowNode $workflowNode, WorkflowNodeState $nodeState = null)
     {
     	$this->id = $nodeState ? "S".$nodeState->id : "N".$workflowNode->id;
-    	\Log::info(sprintf("Workflow - Handling event: %s", $data->event));
+    	\Log::info(sprintf("Workflow - Handling event: %s, internal id: %s", $data->event, $this->id));
 
         $this->addEvent($this->id, $data->event, function ($event) use ($data) {
             \Log::info(sprintf("Workflow - Reading event: %s", $data->event));

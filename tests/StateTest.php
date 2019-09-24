@@ -309,4 +309,49 @@ class StateTest extends BaseTest
 
         event(new DummyEvent("It's time for a new request!"));
     }
+
+    public function testNodes()
+    {
+        $node = \Amethyst\Services\Node::workflow('Hello darkness my old friend');
+
+        $node = $node->next('listener', [
+            'event' => DummyEvent::class,
+        ], ['event']);
+
+
+        $node1 = $node->new('data', [
+            'action' => 'create',
+            'name' => 'foo',
+            'parameters' => [
+                'name' => "Oh, Hi!"
+            ]
+        ]);
+
+        $node2 = $node->new('data', [
+            'action' => 'create',
+            'name' => 'foo',
+            'parameters' => [
+                'name' => "Oh, Hi!"
+            ]
+        ]);
+
+        $node = $node->switch([
+            [
+                'node' => $node1,
+                'condition' => '{{ event.message }} === Hello'
+            ],
+            [
+                'node' => $node2,
+                'condition' => '{{ event.message }} === Goodbye'
+            ],
+        ]);
+
+        $node2 = $node->new('data', [
+            'action' => 'create',
+            'name' => 'foo',
+            'parameters' => [
+                'name' => "The end"
+            ]
+        ]);
+    }
 }

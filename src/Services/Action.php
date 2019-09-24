@@ -137,9 +137,15 @@ class Action
             }
 
             // Data is filtered based on output workflowNode
-            $output = (array) Yaml::parse((string) $workflowNode->output);
-            $data = $data->only($output);
+            $output = new Bag((array) Yaml::parse((string) $workflowNode->output));
 
+            // Dot notation is applied
+            // So key => target.value filter can be used
+            foreach ($output as $key => $value) {
+                $output->set($key, \Illuminate\Support\Arr::get($data->toArray(), $value)); 
+            }
+
+            $data = new Bag($output);
 
             // Define a new state for the node as done
             // First time executed, already done

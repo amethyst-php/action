@@ -38,7 +38,13 @@ class Http extends Action
 
         if ($data->get('json')) {
             $parameters = array_merge($parameters, [
-                \GuzzleHttp\RequestOptions::JSON => json_decode($generator->generateAndRender(json_encode($data->get('json', [])), $data->toArray()))]);
+                \GuzzleHttp\RequestOptions::JSON => json_decode(
+                    $generator->generateAndRender(
+                        json_encode($data->get('json', [])), 
+                        $data->toArray()
+                    )
+                )
+            ]);
         }
 
         $response = $client->request($data->get('method'), $data->get('url'), $parameters);
@@ -49,7 +55,6 @@ class Http extends Action
             $body = json_decode($body);
         }
 
-        \Log::info(json_encode($parameters));
 
         $data->set('response', [
             'url' => $data->get('url'), 
@@ -60,6 +65,8 @@ class Http extends Action
             'body' => $body
         ]);
         
+        \Log::info("Http Request: ".json_encode($data->toArray()));
+
         $this->done($data);
     }
 }
