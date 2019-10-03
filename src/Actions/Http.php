@@ -4,7 +4,6 @@ namespace Amethyst\Actions;
 
 use Closure;
 use Amethyst\Services\Bag;
-use Railken\Template\Generators\TextGenerator;
 use Amethyst\Models\WorkflowNodeState;
 use Amethyst\Models\WorkflowState;
 use Amethyst\Models\Relation;
@@ -27,23 +26,15 @@ class Http extends Action
             'http_errors' => false,
         ]);
 
-        $generator = new TextGenerator;
-        ;
-
         $parameters = [
-            'headers' => json_decode($generator->generateAndRender(json_encode($data->get('headers', [])), $data->toArray())),
-            'form_params' => json_decode($generator->generateAndRender(json_encode($data->get('body', [])), $data->toArray())),
-            'query'    => json_decode($generator->generateAndRender(json_encode($data->get('query', [])), $data->toArray())),
+            'headers' => $data->get('headers', []),
+            'form_params' => $data->get('body', []),
+            'query'    => $data->get('query', []),
         ];
 
         if ($data->get('json')) {
             $parameters = array_merge($parameters, [
-                \GuzzleHttp\RequestOptions::JSON => json_decode(
-                    $generator->generateAndRender(
-                        json_encode($data->get('json', [])), 
-                        $data->toArray()
-                    )
-                )
+                \GuzzleHttp\RequestOptions::JSON => $data->get('json', [])
             ]);
         }
 
@@ -55,7 +46,6 @@ class Http extends Action
             $body = json_decode($body);
         }
 
-
         $data->set('response', [
             'url' => $data->get('url'), 
             'parameters' => $parameters,
@@ -65,7 +55,7 @@ class Http extends Action
             'body' => $body
         ]);
         
-        \Log::info("Http Request: ".json_encode($data->toArray()));
+        \Log::info("Http Request: ".json_encode($data->get('response')));
 
         $this->done($data);
     }

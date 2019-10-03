@@ -15,9 +15,7 @@ class Manager extends Action
 {
     public function handle(Bag $data, WorkflowNode $workflowNode, WorkflowNodeState $nodeState = null)
     {
-		$generator = new TextGenerator;
-
-    	$parameters = json_decode($generator->generateAndRender(json_encode($data->parameters), $data->toArray()));
+    	$parameters = $data->parameters;
 
     	$manager = app('amethyst')->findManagerByName($data->name);
     	$manager = new $manager;
@@ -31,7 +29,7 @@ class Manager extends Action
     	}
 
     	if ($data->action === 'update' || $data->action === 'remove') {
-    		$string = $generator->generateAndRender($data->query, $data->toArray());
+    		$string = $data->query;
     		$query = $manager->getRepository()->newQuery();
 
     		$filter->build($query, $string);

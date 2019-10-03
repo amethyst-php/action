@@ -9,6 +9,7 @@ use Amethyst\Managers\WorkflowStateManager;
 use Amethyst\Models\Relation;
 use Amethyst\Services\Bag;
 use Symfony\Component\Yaml\Yaml;
+use Railken\Template\Generators\TextGenerator;
 
 class Action
 {
@@ -103,8 +104,6 @@ class Action
             $workflowNodeState->state = 'run';
             $workflowNodeState->save();
         }
-
-        $data = $workflowNode->data;
 
         $action = $workflowNode->target;
 
@@ -226,9 +225,11 @@ class Action
 
         $actioner = new $class($executed, $released);
 
-        $parsed = Yaml::parse((string) $workflowNode->data);
-        $data = new Bag($parsed ?? []);
-        $data = $data->merge($workflowNodeState ? unserialize($workflowNodeState->data) : []);
+        $data = new Bag($workflowNodeState ? unserialize($workflowNodeState->data) : []);
+        $generator = new TextGenerator();
+        \Log::info("To Rendere:".$workflowNode->data);
+        $rendered = $generator->generateAndRender($workflowNode->data, $data->toArray());
+        $data = $data->merge(Yaml::parse($rendered));
 
         $actioner->setData($data);
 
