@@ -10,6 +10,8 @@ use Amethyst\Models\WorkflowNode;
 use Amethyst\Observers\WorkflowObserver;
 use Amethyst\Observers\WorkflowNodeObserver;
 use Amethyst\Observers\RelationObserver;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Schema;
 
 class ActionServiceProvider extends CommonServiceProvider
 {
@@ -49,8 +51,12 @@ class ActionServiceProvider extends CommonServiceProvider
         app('amethyst.action')->addType('switcher', Actions\Switcher::class);
         app('amethyst.action')->addType('http', Actions\Http::class);
 
+
         Actions\Action::boot();
-        app('amethyst.action')->starter();
+
+        if (Schema::hasTable(Config::get('amethyst.action.data.action.table'))) {
+            app('amethyst.action')->starter();
+        }
 
         Workflow::observe(WorkflowObserver::class);
         WorkflowNode::observe(WorkflowNodeObserver::class);
