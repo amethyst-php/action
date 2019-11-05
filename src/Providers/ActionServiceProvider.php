@@ -51,9 +51,6 @@ class ActionServiceProvider extends CommonServiceProvider
         app('amethyst.action')->addType('switcher', Actions\Switcher::class);
         app('amethyst.action')->addType('http', Actions\Http::class);
 
-
-        Actions\Action::boot();
-
         if (Schema::hasTable(Config::get('amethyst.action.data.action.table'))) {
             app('amethyst.action')->starter();
         }

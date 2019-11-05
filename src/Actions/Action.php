@@ -4,8 +4,6 @@ namespace Amethyst\Actions;
 
 use Closure;
 use Amethyst\Services\Bag;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Event;
 use Amethyst\Models\WorkflowNodeState;
 use Amethyst\Models\WorkflowState;
 use Amethyst\Models\WorkflowNode;
@@ -20,7 +18,6 @@ class Action
     {
         $this->executed = $executed;
         $this->released = $released;
-        self::boot();
     }
 
     public function done(Bag $data, $nodes = null)
@@ -38,49 +35,6 @@ class Action
     public function setData($data)
     {
         $this->data = $data;
-    }
-
-    public static function boot()
-    {
-        if (self::$booted) {
-            return;
-        }
-
-        self::$booted = true;
-
-
-        self::$events = Collection::make();
-
-        Event::listen(['*'], function ($eventName, $events) {
-
-            $event = $events[0];
-
-            self::$events->filter(function ($evt) use ($eventName) {
-                
-                return $evt->class === $eventName;
-            })->map(function ($action) use ($event) {
-                $closure = $action->execute;
-                $closure($event);
-            });
-        });
-    }
-
-    public function addEvent(string $uid, string $event, Closure $closure)
-    {
-        self::$events[$uid] = (object) [
-            'class'   => $event,
-            'execute' => $closure
-        ];
-    }
-
-    public function removeEvent(string $id)
-    {
-        unset(self::$events[$id]);
-    }
-
-    public function getEvents()
-    {
-        return self::$events;
     }
 
     /**

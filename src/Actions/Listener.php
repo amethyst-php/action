@@ -15,7 +15,7 @@ class Listener extends Action
     	$this->id = $nodeState ? "S".$nodeState->id : "N".$workflowNode->id;
     	\Log::info(sprintf("Workflow - Handling event: %s, internal id: %s", $data->event, $this->id));
 
-        $this->addEvent($this->id, $data->event, function ($event) use ($data) {
+        app('amethyst.action')->addEvent($this->id, $data->event, function ($event) use ($data) {
             \Log::info(sprintf("Workflow - Reading event: %s", $data->event));
 
             $this->done($data->merge(new Bag(['event' => $event])));

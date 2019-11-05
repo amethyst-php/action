@@ -10,11 +10,15 @@ use Amethyst\Models\Relation;
 use Amethyst\Services\Bag;
 use Symfony\Component\Yaml\Yaml;
 use Railken\Template\Generators\TextGenerator;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Event;
+use Closure;
 
 class Action
 {
     protected $types = [];
     protected $enabled = false;
+    protected $events = [];
 
     public function __construct()
     {
@@ -42,8 +46,51 @@ class Action
     public function starter()
     {
         \Log::info("Workflow - Checking");
+
         $this->dispatchByRelations();
         $this->dispatchByWorkflowNodeState();
+        $this->boot();
+    }
+
+    public function addEvent(string $uid, string $event, Closure $closure)
+    {
+        $this->events[$uid] = (object) [
+            'class'   => $event,
+            'execute' => $closure
+        ];
+    }
+
+    public function removeEvent(string $id)
+    {
+        unset($this->events[$id]);
+    }
+
+    public function getEvents()
+    {
+        return $this->events;
+    }
+
+
+    public function boot()
+    {
+        $this->events = Collection::make();
+
+        Event::listen(['*'], function ($eventName, $events) {
+
+            if (count($events) === 0) {
+                return true;
+            }
+            
+            $event = $events[0];
+
+            $this->events->filter(function ($evt) use ($eventName) {
+                
+                return $evt->class === $eventName;
+            })->map(function ($action) use ($event) {
+                $closure = $action->execute;
+                $closure($event);
+            });
+        });
     }
 
     public function dispatchByRelations()
