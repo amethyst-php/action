@@ -76,7 +76,6 @@ class Action
         $this->events = Collection::make();
 
         Event::listen(['*'], function ($eventName, $events) {
-
             if (count($events) === 0) {
                 return true;
             }
@@ -84,7 +83,6 @@ class Action
             $event = $events[0];
 
             $this->events->filter(function ($evt) use ($eventName) {
-                
                 return $evt->class === $eventName;
             })->map(function ($action) use ($event) {
                 $closure = $action->execute;
@@ -139,9 +137,9 @@ class Action
     public function dispatch($workflowNode, $workflowNodeState = null)
     {
         \Log::info(sprintf(
-            "Workflow - Dispatching Workflow %s, WorkflowNode: %s with state %s", 
+            "Workflow - Dispatching Workflow %s, WorkflowNode: %s with state %s",
             $workflowNode->workflow->id,
-            $workflowNode->id, 
+            $workflowNode->id,
             $workflowNodeState->id ?? null
         ));
 
@@ -164,11 +162,10 @@ class Action
         $class = $this->getType($payload->class);
 
         $executed = function ($data, $allowedNextNodes = null) use ($workflowNode, $workflowNodeState) {
-
             \Log::info(sprintf(
-                "Workflow - Executing Workflow %s, WorkflowNode: %s with state %s", 
+                "Workflow - Executing Workflow %s, WorkflowNode: %s with state %s",
                 $workflowNode->workflow->id,
-                $workflowNode->id, 
+                $workflowNode->id,
                 $workflowNodeState->id ?? null
             ));
 
@@ -188,7 +185,7 @@ class Action
             // Dot notation is applied
             // So key => target.value filter can be used
             foreach ($output as $key => $value) {
-                $output->set($key, \Illuminate\Support\Arr::get($data->toArray(), $value)); 
+                $output->set($key, \Illuminate\Support\Arr::get($data->toArray(), $value));
             }
 
             $data = new Bag($output);
@@ -217,7 +214,6 @@ class Action
                 
             // If there is no next nodes, than the workflow instance should be terminated
             if ($nextNodes->count() === 0) {
-
                 \Log::info(sprintf("Workflow - Terminating %s", $workflowNode->workflow->id));
 
                 $workflowState->state = 'done';
@@ -231,11 +227,10 @@ class Action
             }
 
             $nextNodes->map(function ($relation) use ($workflowState, $data) {
-
                 $workflowNode = $relation->target;
 
                 \Log::info(sprintf(
-                    "Workflow - Activating siblings Workflow %s, WorkflowNode: %s", 
+                    "Workflow - Activating siblings Workflow %s, WorkflowNode: %s",
                     $workflowNode->workflow->id,
                     $workflowNode->id
                 ));
@@ -257,7 +252,6 @@ class Action
         };
 
         $released = function ($data) use ($workflowNodeState) {
-
             if ($workflowNodeState) {
                 \Log::info(sprintf("Terminating - Executing WorkflowNode: %s with state %s", $workflowNodeState->workflow_node->id, $workflowNodeState->id ?? null));
 
@@ -267,7 +261,6 @@ class Action
                     $workflowNodeState->save();
                 }
             }
-
         };
 
         $actioner = new $class($executed, $released);

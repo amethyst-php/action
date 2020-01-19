@@ -10,26 +10,26 @@ use Symfony\Component\Yaml\Yaml;
 
 class Node
 {
-	public $workflow;
-	public $lastNode;
+    public $workflow;
+    public $lastNode;
 
-	public function __construct()
-	{
+    public function __construct()
+    {
         $this->actionManager = new ActionManager();
         $this->workflowManager = new WorkflowManager();
         $this->workflowNodeManager = new WorkflowNodeManager();
         $this->relationManager = new RelationManager();
-	}	
+    }
 
-	public static function new(string $name)
-	{
-		$this->workflow = $this->workflowManager->createOrFail([
+    public static function new(string $name)
+    {
+        $this->workflow = $this->workflowManager->createOrFail([
             'name' => $this->name,
         ])->getResource();
-	}
+    }
 
-	public function next()
-	{
+    public function next()
+    {
         $node1 = $workflowNodeManager->createOrFail([
             'workflow_id' => $workflow->id,
             'target_type' => 'action',
@@ -39,5 +39,5 @@ class Node
             ]),
             'output'       => Yaml::dump(['event']),
         ])->getResource();
-	}
+    }
 }

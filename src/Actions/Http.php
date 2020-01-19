@@ -47,11 +47,11 @@ class Http extends Action
         }
 
         $data->set('response', [
-            'url' => $data->get('url'), 
+            'url' => $data->get('url'),
             'parameters' => $parameters,
             'status'   => $response->getStatusCode(),
             'time'     => microtime(true) - $time,
-            'headers' => $response->getHeaders(), 
+            'headers' => $response->getHeaders(),
             'body' => $body
         ]);
         
