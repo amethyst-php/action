@@ -2,7 +2,7 @@
 
 namespace Amethyst\Managers;
 
-use Amethyst\Common\ConfigurableManager;
+use Amethyst\Core\ConfigurableManager;
 use Amethyst\Jobs\Action as Job;
 use Amethyst\Models\Action;
 use Railken\Lem\Manager;

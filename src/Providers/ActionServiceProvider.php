@@ -3,7 +3,7 @@
 namespace Amethyst\Providers;
 
 use Amethyst\Actions;
-use Amethyst\Common\CommonServiceProvider;
+use Amethyst\Core\Providers\CommonServiceProvider;
 use Amethyst\Models\Workflow;
 use Amethyst\Models\Relation;
 use Amethyst\Models\WorkflowNode;
