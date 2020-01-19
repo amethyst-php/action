@@ -4,18 +4,18 @@
     "keywords": ["laravel", "amethyst", "action"],
     "license": "MIT",
     "require": {
-        "php": ">=7.1",
-        "amethyst/common": "0.1.*",
-        "amethyst/relation": "0.1.*",
+        "php": ">=7.2",
+        "amethyst/core": "0.2.*",
+        "amethyst/relation": "0.2.*",
         "railken/template": "^1.0",
         "nicoswd/php-rule-parser": "^0.5.7",
         "guzzlehttp/guzzle": "^6.3",
         "namshi/cuzzle": "^2.0"
     },
     "require-dev": {
-        "amethyst/foo": "0.1.*",
+        "amethyst/foo": "0.2.*",
         "phpunit/phpunit": "7.*",
-        "orchestra/testbench": "3.*"
+        "orchestra/testbench": "*"
     },
     "autoload": {
         "psr-4" : {
