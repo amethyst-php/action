@@ -2,13 +2,11 @@
 
 namespace Amethyst\Actions;
 
-use Closure;
-use Illuminate\Support\Facades\Log as Logger;
-use Amethyst\Services\Bag;
-use Railken\Template\Generators\TextGenerator;
-use Amethyst\Models\WorkflowNodeState;
-use Amethyst\Models\WorkflowState;
 use Amethyst\Models\WorkflowNode;
+use Amethyst\Models\WorkflowNodeState;
+use Amethyst\Services\Bag;
+use Illuminate\Support\Facades\Log as Logger;
+use Railken\Template\Generators\TextGenerator;
 
 class Log extends Action
 {

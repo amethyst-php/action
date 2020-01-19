@@ -2,18 +2,9 @@
 
 namespace Amethyst\Actions;
 
-use Closure;
-use Amethyst\Services\Bag;
-use Amethyst\Models\WorkflowNodeState;
-use Amethyst\Models\WorkflowState;
-use Amethyst\Models\Relation;
 use Amethyst\Models\WorkflowNode;
-use nicoSWD\Rules\Rule;
-use GuzzleHttp\HandlerStack;
-use Monolog\Handler\TestHandler;
-use Monolog\Logger;
-use Namshi\Cuzzle\Middleware\CurlFormatterMiddleware;
-use Symfony\Component\Yaml\Yaml;
+use Amethyst\Models\WorkflowNodeState;
+use Amethyst\Services\Bag;
 
 class Http extends Action
 {
@@ -21,20 +12,19 @@ class Http extends Action
     {
         $time = microtime(true);
 
-
         $client = new \GuzzleHttp\Client([
             'http_errors' => false,
         ]);
 
         $parameters = [
-            'headers' => $data->get('headers', []),
+            'headers'     => $data->get('headers', []),
             'form_params' => $data->get('body', []),
-            'query'    => $data->get('query', []),
+            'query'       => $data->get('query', []),
         ];
 
         if ($data->get('json')) {
             $parameters = array_merge($parameters, [
-                \GuzzleHttp\RequestOptions::JSON => $data->get('json', [])
+                \GuzzleHttp\RequestOptions::JSON => $data->get('json', []),
             ]);
         }
 
@@ -47,15 +37,15 @@ class Http extends Action
         }
 
         $data->set('response', [
-            'url' => $data->get('url'),
+            'url'        => $data->get('url'),
             'parameters' => $parameters,
-            'status'   => $response->getStatusCode(),
-            'time'     => microtime(true) - $time,
-            'headers' => $response->getHeaders(),
-            'body' => $body
+            'status'     => $response->getStatusCode(),
+            'time'       => microtime(true) - $time,
+            'headers'    => $response->getHeaders(),
+            'body'       => $body,
         ]);
-        
-        \Log::info("Http Request: ".json_encode($data->get('response')));
+
+        \Log::info('Http Request: '.json_encode($data->get('response')));
 
         $this->done($data);
     }

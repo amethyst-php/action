@@ -15,8 +15,6 @@ class WorkflowState extends Model implements EntityContract
 
     /**
      * Create a new Eloquent model instance.
-     *
-     * @param array $attributes
      */
     public function __construct(array $attributes = [])
     {
@@ -24,9 +22,6 @@ class WorkflowState extends Model implements EntityContract
         parent::__construct($attributes);
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
     public function workflow(): BelongsTo
     {
         return $this->belongsTo(config('amethyst.action.data.workflow.model'));

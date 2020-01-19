@@ -2,13 +2,9 @@
 
 namespace Amethyst\Actions;
 
-use Closure;
-use Illuminate\Support\Facades\Log as Logger;
-use Amethyst\Services\Bag;
-use Railken\Template\Generators\TextGenerator;
-use Amethyst\Models\WorkflowNodeState;
-use Amethyst\Models\WorkflowState;
 use Amethyst\Models\WorkflowNode;
+use Amethyst\Models\WorkflowNodeState;
+use Amethyst\Services\Bag;
 use Railken\LaraEye\Filter;
 
 class Manager extends Action
@@ -18,11 +14,11 @@ class Manager extends Action
         $parameters = $data->parameters;
 
         $manager = app('amethyst')->findManagerByName($data->name);
-        $manager = new $manager;
+        $manager = new $manager();
 
         $filter = new Filter($manager->newEntity()->getTable(), ['*']);
 
-        \Log::info(sprintf("Workflow - Manager: %s, %s, %s", $data->action, $data->name, json_encode($parameters)));
+        \Log::info(sprintf('Workflow - Manager: %s, %s, %s', $data->action, $data->name, json_encode($parameters)));
 
         if ($data->action === 'create') {
             $manager->createOrFail($parameters);

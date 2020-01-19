@@ -18,9 +18,6 @@ class ActionManager extends Manager
 
     /**
      * Dispatch a work.
-     *
-     * @param Action $action
-     * @param array  $data
      */
     public function dispatch(Action $action, array $data = [])
     {

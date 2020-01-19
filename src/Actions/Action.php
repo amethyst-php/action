@@ -2,11 +2,8 @@
 
 namespace Amethyst\Actions;
 
-use Closure;
 use Amethyst\Services\Bag;
-use Amethyst\Models\WorkflowNodeState;
-use Amethyst\Models\WorkflowState;
-use Amethyst\Models\WorkflowNode;
+use Closure;
 
 class Action
 {
@@ -38,7 +35,7 @@ class Action
     }
 
     /**
-     * Destroy the current action
+     * Destroy the current action.
      */
     public function destroy()
     {

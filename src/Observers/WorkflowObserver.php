@@ -9,7 +9,8 @@ class WorkflowObserver
     /**
      * Handle the Workflow "created" event.
      *
-     * @param  \App\Workflow  $workflow
+     * @param \App\Workflow $workflow
+     *
      * @return void
      */
     public function created(Workflow $workflow)
@@ -20,7 +21,8 @@ class WorkflowObserver
     /**
      * Handle the Workflow "updated" event.
      *
-     * @param  \App\Workflow  $workflow
+     * @param \App\Workflow $workflow
+     *
      * @return void
      */
     public function updated(Workflow $workflow)
@@ -31,7 +33,8 @@ class WorkflowObserver
     /**
      * Handle the Workflow "deleted" event.
      *
-     * @param  \App\Workflow  $workflow
+     * @param \App\Workflow $workflow
+     *
      * @return void
      */
     public function deleted(Workflow $workflow)

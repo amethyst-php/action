@@ -37,7 +37,7 @@ class Node
             'data'        => Yaml::dump([
                 'event' => DummyEvent::class,
             ]),
-            'output'       => Yaml::dump(['event']),
+            'output' => Yaml::dump(['event']),
         ])->getResource();
     }
 }

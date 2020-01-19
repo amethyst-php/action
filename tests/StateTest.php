@@ -6,7 +6,6 @@ use Amethyst\Managers\ActionManager;
 use Amethyst\Managers\RelationManager;
 use Amethyst\Managers\WorkflowManager;
 use Amethyst\Managers\WorkflowNodeManager;
-use Amethyst\Tests\DummyEvent;
 use Symfony\Component\Yaml\Yaml;
 
 class StateTest extends BaseTest
@@ -56,7 +55,7 @@ class StateTest extends BaseTest
             'data'        => Yaml::dump([
                 'event' => DummyEvent::class,
             ]),
-            'output'       => Yaml::dump(['event']),
+            'output' => Yaml::dump(['event']),
         ])->getResource();
 
         $node2 = $workflowNodeManager->createOrFail([
@@ -64,28 +63,27 @@ class StateTest extends BaseTest
             'target_type' => 'action',
             'target_id'   => $dataAction->id,
             'data'        => Yaml::dump([
-                'name' => 'foo',
-                'action'   => 'create',
+                'name'       => 'foo',
+                'action'     => 'create',
                 'parameters' => [
-                    'name' => "{{ event.message }}",
-                ]
-            ])
+                    'name' => '{{ event.message }}',
+                ],
+            ]),
         ])->getResource();
 
         $relationManager->createOrFail([
-            'source_type'    => 'workflow',
-            'source_id'      => $workflow->id,
+            'source_type' => 'workflow',
+            'source_id'   => $workflow->id,
             'target_type' => 'workflow-node',
             'target_id'   => $node1->id,
         ]);
 
         $relationManager->createOrFail([
-            'source_type'    => 'workflow-node',
-            'source_id'      => $node1->id,
+            'source_type' => 'workflow-node',
+            'source_id'   => $node1->id,
             'target_type' => 'workflow-node',
             'target_id'   => $node2->id,
         ]);
-
 
         event(new DummyEvent('Yeah!'));
         event(new DummyEvent('Not Anymore!'));
@@ -122,7 +120,6 @@ class StateTest extends BaseTest
             ]),
         ])->getResource();
 
-
         $workflow = $workflowManager->createOrFail([
             'name' => 'Should work with 2 workflow',
         ])->getResource();
@@ -134,7 +131,7 @@ class StateTest extends BaseTest
             'data'        => Yaml::dump([
                 'event' => DummyEvent::class,
             ]),
-            'output'       => Yaml::dump(['event']),
+            'output' => Yaml::dump(['event']),
         ])->getResource();
 
         $node3 = $workflowNodeManager->createOrFail([
@@ -142,12 +139,12 @@ class StateTest extends BaseTest
             'target_type' => 'action',
             'target_id'   => $dataAction->id,
             'data'        => Yaml::dump([
-                'name' => 'foo',
-                'action'   => 'create',
+                'name'       => 'foo',
+                'action'     => 'create',
                 'parameters' => [
-                    'name' => "Street 1: Event {{ event.message }}",
-                ]
-            ])
+                    'name' => 'Street 1: Event {{ event.message }}',
+                ],
+            ]),
         ])->getResource();
 
         $node4 = $workflowNodeManager->createOrFail([
@@ -155,12 +152,12 @@ class StateTest extends BaseTest
             'target_type' => 'action',
             'target_id'   => $dataAction->id,
             'data'        => Yaml::dump([
-                'name' => 'foo',
-                'action'   => 'create',
+                'name'       => 'foo',
+                'action'     => 'create',
                 'parameters' => [
-                    'name' => "Street 2: Event {{ event.message }}",
-                ]
-            ])
+                    'name' => 'Street 2: Event {{ event.message }}',
+                ],
+            ]),
         ])->getResource();
 
         $node2 = $workflowNodeManager->createOrFail([
@@ -170,10 +167,10 @@ class StateTest extends BaseTest
             'data'        => Yaml::dump([
                 'channels' => [
                     $node3->id => "'{{ event.message }}' === '1'",
-                    $node4->id => "'{{ event.message }}' === '2'"
-                ]
+                    $node4->id => "'{{ event.message }}' === '2'",
+                ],
             ]),
-            'output'       => Yaml::dump(['event']),
+            'output' => Yaml::dump(['event']),
         ])->getResource();
 
         $node5 = $workflowNodeManager->createOrFail([
@@ -181,59 +178,58 @@ class StateTest extends BaseTest
             'target_type' => 'action',
             'target_id'   => $dataAction->id,
             'data'        => Yaml::dump([
-                'name' => 'foo',
-                'action'   => 'create',
+                'name'       => 'foo',
+                'action'     => 'create',
                 'parameters' => [
-                    'name' => "The end",
-                ]
-            ])
+                    'name' => 'The end',
+                ],
+            ]),
         ])->getResource();
 
         $relationManager->createOrFail([
-            'source_type'    => 'workflow',
-            'source_id'      => $workflow->id,
+            'source_type' => 'workflow',
+            'source_id'   => $workflow->id,
             'target_type' => 'workflow-node',
             'target_id'   => $node1->id,
         ]);
 
         $relationManager->createOrFail([
-            'source_type'    => 'workflow-node',
-            'source_id'      => $node1->id,
+            'source_type' => 'workflow-node',
+            'source_id'   => $node1->id,
             'target_type' => 'workflow-node',
             'target_id'   => $node2->id,
         ]);
 
         $relationManager->createOrFail([
-            'source_type'    => 'workflow-node',
-            'source_id'      => $node2->id,
+            'source_type' => 'workflow-node',
+            'source_id'   => $node2->id,
             'target_type' => 'workflow-node',
             'target_id'   => $node3->id,
         ]);
 
         $relationManager->createOrFail([
-            'source_type'    => 'workflow-node',
-            'source_id'      => $node2->id,
+            'source_type' => 'workflow-node',
+            'source_id'   => $node2->id,
             'target_type' => 'workflow-node',
             'target_id'   => $node4->id,
         ]);
 
         $relationManager->createOrFail([
-            'source_type'    => 'workflow-node',
-            'source_id'      => $node4->id,
+            'source_type' => 'workflow-node',
+            'source_id'   => $node4->id,
             'target_type' => 'workflow-node',
             'target_id'   => $node5->id,
         ]);
-        
+
         $relationManager->createOrFail([
-            'source_type'    => 'workflow-node',
-            'source_id'      => $node3->id,
+            'source_type' => 'workflow-node',
+            'source_id'   => $node3->id,
             'target_type' => 'workflow-node',
             'target_id'   => $node5->id,
         ]);
 
-        event(new DummyEvent('1')); 
+        event(new DummyEvent('1'));
     }
-
 
     /**
      * Test basic workflow.
@@ -272,37 +268,37 @@ class StateTest extends BaseTest
             'data'        => Yaml::dump([
                 'event' => DummyEvent::class,
             ]),
-            'output'       => Yaml::dump(['event']),
+            'output' => Yaml::dump(['event']),
         ])->getResource();
 
         $node2 = $workflowNodeManager->createOrFail([
             'workflow_id' => $workflow->id,
             'target_type' => 'action',
             'target_id'   => $httpAction->id,
-            'output'       => Yaml::dump(['response']),
+            'output'      => Yaml::dump(['response']),
             'data'        => Yaml::dump([
-                'url' => 'https://api.github.com/orgs/octokit/repos',
-                'method' => 'GET',
+                'url'     => 'https://api.github.com/orgs/octokit/repos',
+                'method'  => 'GET',
                 'headers' => [
-                    'test' => 'Hello'
+                    'test' => 'Hello',
                 ],
                 'query' => [
-                    'param' => "I'm a simple param"
+                    'param' => "I'm a simple param",
                 ],
-                'json' => true
-            ])
+                'json' => true,
+            ]),
         ])->getResource();
 
         $relationManager->createOrFail([
-            'source_type'    => 'workflow',
-            'source_id'      => $workflow->id,
+            'source_type' => 'workflow',
+            'source_id'   => $workflow->id,
             'target_type' => 'workflow-node',
             'target_id'   => $node1->id,
         ]);
 
         $relationManager->createOrFail([
-            'source_type'    => 'workflow-node',
-            'source_id'      => $node1->id,
+            'source_type' => 'workflow-node',
+            'source_id'   => $node1->id,
             'target_type' => 'workflow-node',
             'target_id'   => $node2->id,
         ]);
@@ -318,40 +314,39 @@ class StateTest extends BaseTest
             'event' => DummyEvent::class,
         ], ['event']);
 
-
         $node1 = $node->new('data', [
-            'action' => 'create',
-            'name' => 'foo',
+            'action'     => 'create',
+            'name'       => 'foo',
             'parameters' => [
-                'name' => "Oh, Hi!"
-            ]
+                'name' => 'Oh, Hi!',
+            ],
         ]);
 
         $node2 = $node->new('data', [
-            'action' => 'create',
-            'name' => 'foo',
+            'action'     => 'create',
+            'name'       => 'foo',
             'parameters' => [
-                'name' => "Oh, Hi!"
-            ]
+                'name' => 'Oh, Hi!',
+            ],
         ]);
 
         $node = $node->switch([
             [
-                'node' => $node1,
-                'condition' => '{{ event.message }} === Hello'
+                'node'      => $node1,
+                'condition' => '{{ event.message }} === Hello',
             ],
             [
-                'node' => $node2,
-                'condition' => '{{ event.message }} === Goodbye'
+                'node'      => $node2,
+                'condition' => '{{ event.message }} === Goodbye',
             ],
         ]);
 
         $node2 = $node->new('data', [
-            'action' => 'create',
-            'name' => 'foo',
+            'action'     => 'create',
+            'name'       => 'foo',
             'parameters' => [
-                'name' => "The end"
-            ]
+                'name' => 'The end',
+            ],
         ]);
     }
 }

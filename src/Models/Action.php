@@ -14,8 +14,6 @@ class Action extends Model implements EntityContract
 
     /**
      * Create a new Eloquent model instance.
-     *
-     * @param array $attributes
      */
     public function __construct(array $attributes = [])
     {

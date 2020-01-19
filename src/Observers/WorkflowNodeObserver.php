@@ -9,7 +9,8 @@ class WorkflowNodeObserver
     /**
      * Handle the WorkflowNode "created" event.
      *
-     * @param  \App\WorkflowNode  $workflowNode
+     * @param \App\WorkflowNode $workflowNode
+     *
      * @return void
      */
     public function created(WorkflowNode $workflowNode)
@@ -20,7 +21,8 @@ class WorkflowNodeObserver
     /**
      * Handle the WorkflowNode "updated" event.
      *
-     * @param  \App\WorkflowNode  $workflowNode
+     * @param \App\WorkflowNode $workflowNode
+     *
      * @return void
      */
     public function updated(WorkflowNode $workflowNode)
@@ -31,7 +33,8 @@ class WorkflowNodeObserver
     /**
      * Handle the WorkflowNode "deleted" event.
      *
-     * @param  \App\WorkflowNode  $workflowNode
+     * @param \App\WorkflowNode $workflowNode
+     *
      * @return void
      */
     public function deleted(WorkflowNode $workflowNode)

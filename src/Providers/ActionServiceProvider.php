@@ -4,12 +4,12 @@ namespace Amethyst\Providers;
 
 use Amethyst\Actions;
 use Amethyst\Core\Providers\CommonServiceProvider;
-use Amethyst\Models\Workflow;
 use Amethyst\Models\Relation;
+use Amethyst\Models\Workflow;
 use Amethyst\Models\WorkflowNode;
-use Amethyst\Observers\WorkflowObserver;
-use Amethyst\Observers\WorkflowNodeObserver;
 use Amethyst\Observers\RelationObserver;
+use Amethyst\Observers\WorkflowNodeObserver;
+use Amethyst\Observers\WorkflowObserver;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
 

@@ -9,7 +9,8 @@ class RelationObserver
     /**
      * Handle the Relation "created" event.
      *
-     * @param  \App\Relation  $relation
+     * @param \App\Relation $relation
+     *
      * @return void
      */
     public function created(Relation $relation)
@@ -20,7 +21,8 @@ class RelationObserver
     /**
      * Handle the Relation "updated" event.
      *
-     * @param  \App\Relation  $relation
+     * @param \App\Relation $relation
+     *
      * @return void
      */
     public function updated(Relation $relation)
@@ -31,7 +33,8 @@ class RelationObserver
     /**
      * Handle the Relation "deleted" event.
      *
-     * @param  \App\Relation  $relation
+     * @param \App\Relation $relation
+     *
      * @return void
      */
     public function deleted(Relation $relation)
