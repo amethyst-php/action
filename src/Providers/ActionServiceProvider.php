@@ -37,6 +37,7 @@ class ActionServiceProvider extends CommonServiceProvider
     {
         parent::boot();
 
+        /*
         app('amethyst')->pushMorphRelation('workflow-node', 'target', 'workflow');
         app('amethyst')->pushMorphRelation('workflow-node', 'target', 'action');
 
@@ -44,6 +45,7 @@ class ActionServiceProvider extends CommonServiceProvider
         app('amethyst')->pushMorphRelation('relation', 'target', 'workflow-node');
         app('amethyst')->pushMorphRelation('relation', 'source', 'workflow');
         app('amethyst')->pushMorphRelation('relation', 'target', 'workflow');
+        */
 
         app('amethyst.action')->addType('log', Actions\Log::class);
         app('amethyst.action')->addType('listener', Actions\Listener::class);
