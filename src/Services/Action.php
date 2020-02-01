@@ -7,12 +7,11 @@ use Amethyst\Managers\WorkflowNodeManager;
 use Amethyst\Managers\WorkflowNodeStateManager;
 use Amethyst\Managers\WorkflowStateManager;
 use Amethyst\Models\Relation;
-use Amethyst\Services\Bag;
-use Symfony\Component\Yaml\Yaml;
-use Railken\Template\Generators\TextGenerator;
+use Closure;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
-use Closure;
+use Railken\Template\Generators\TextGenerator;
+use Symfony\Component\Yaml\Yaml;
 
 class Action
 {
@@ -45,7 +44,7 @@ class Action
 
     public function starter()
     {
-        \Log::info("Workflow - Checking");
+        \Log::info('Workflow - Checking');
 
         $this->dispatchByRelations();
         $this->dispatchByWorkflowNodeState();
@@ -56,7 +55,7 @@ class Action
     {
         $this->events[$uid] = (object) [
             'class'   => $event,
-            'execute' => $closure
+            'execute' => $closure,
         ];
     }
 
@@ -70,7 +69,6 @@ class Action
         return $this->events;
     }
 
-
     public function boot()
     {
         $this->events = Collection::make();
@@ -79,7 +77,7 @@ class Action
             if (count($events) === 0) {
                 return true;
             }
-            
+
             $event = $events[0];
 
             $this->events->filter(function ($evt) use ($eventName) {
@@ -100,7 +98,7 @@ class Action
             ->where('target_type', 'workflow-node')
             ->get();
 
-        \Log::info(sprintf("Workflow - Checking relations to start: %s", $results->count()));
+        \Log::info(sprintf('Workflow - Checking relations to start: %s', $results->count()));
 
         $results->filter(function ($relation) {
             return $relation->source->enabled;
@@ -137,7 +135,7 @@ class Action
     public function dispatch($workflowNode, $workflowNodeState = null)
     {
         \Log::info(sprintf(
-            "Workflow - Dispatching Workflow %s, WorkflowNode: %s with state %s",
+            'Workflow - Dispatching Workflow %s, WorkflowNode: %s with state %s',
             $workflowNode->workflow->id,
             $workflowNode->id,
             $workflowNodeState->id ?? null
@@ -155,7 +153,8 @@ class Action
         $payload = (object) Yaml::parse($action->payload);
 
         if (!isset($payload->class)) {
-            \Log::warning(sprintf("Error with workflow, missing class"));
+            \Log::warning(sprintf('Error with workflow, missing class'));
+
             return;
         }
 
@@ -163,7 +162,7 @@ class Action
 
         $executed = function ($data, $allowedNextNodes = null) use ($workflowNode, $workflowNodeState) {
             \Log::info(sprintf(
-                "Workflow - Executing Workflow %s, WorkflowNode: %s with state %s",
+                'Workflow - Executing Workflow %s, WorkflowNode: %s with state %s',
                 $workflowNode->workflow->id,
                 $workflowNode->id,
                 $workflowNodeState->id ?? null
@@ -172,8 +171,8 @@ class Action
             // Define a new state for the workflow
             if (!$workflowNodeState) {
                 $workflowState = $this->workflowStateManager->createOrFail([
-                    'workflow_id'       => $workflowNode->workflow->id,
-                    'state'             => 'run',
+                    'workflow_id' => $workflowNode->workflow->id,
+                    'state'       => 'run',
                 ])->getResource();
             } else {
                 $workflowState = $workflowNodeState->workflow_state;
@@ -197,7 +196,7 @@ class Action
                     'workflow_node_id'  => $workflowNode->id,
                     'workflow_state_id' => $workflowState->id,
                     'state'             => 'done',
-                    'data'              => serialize($data)
+                    'data'              => serialize($data),
                 ])->getResource();
             } else {
                 $workflowNodeState->data = serialize($data);
@@ -206,15 +205,15 @@ class Action
             }
 
             // Set all next nodes as idles
-            $nextNodes = (new Relation)
+            $nextNodes = (new Relation())
                 ->where('source_type', 'workflow-node')
                 ->where('source_id', $workflowNode->id)
                 ->where('target_type', 'workflow-node')
                 ->get();
-                
+
             // If there is no next nodes, than the workflow instance should be terminated
             if ($nextNodes->count() === 0) {
-                \Log::info(sprintf("Workflow - Terminating %s", $workflowNode->workflow->id));
+                \Log::info(sprintf('Workflow - Terminating %s', $workflowNode->workflow->id));
 
                 $workflowState->state = 'done';
                 $workflowState->save();
@@ -222,7 +221,7 @@ class Action
 
             if ($allowedNextNodes !== null) {
                 $nextNodes = $nextNodes->filter(function ($relation) use ($allowedNextNodes) {
-                    return in_array($relation->target->id, $allowedNextNodes->toArray());
+                    return in_array($relation->target->id, $allowedNextNodes->toArray(), true);
                 });
             }
 
@@ -230,7 +229,7 @@ class Action
                 $workflowNode = $relation->target;
 
                 \Log::info(sprintf(
-                    "Workflow - Activating siblings Workflow %s, WorkflowNode: %s",
+                    'Workflow - Activating siblings Workflow %s, WorkflowNode: %s',
                     $workflowNode->workflow->id,
                     $workflowNode->id
                 ));
@@ -239,7 +238,7 @@ class Action
                     'workflow_node_id'  => $workflowNode->id,
                     'workflow_state_id' => $workflowState->id,
                     'state'             => 'wait',
-                    'data'              => serialize($data)
+                    'data'              => serialize($data),
                 ]);
             });
 
@@ -253,7 +252,7 @@ class Action
 
         $released = function ($data) use ($workflowNodeState) {
             if ($workflowNodeState) {
-                \Log::info(sprintf("Terminating - Executing WorkflowNode: %s with state %s", $workflowNodeState->workflow_node->id, $workflowNodeState->id ?? null));
+                \Log::info(sprintf('Terminating - Executing WorkflowNode: %s with state %s', $workflowNodeState->workflow_node->id, $workflowNodeState->id ?? null));
 
                 if ($workflowNodeState) {
                     $workflowNodeState->state = 'wait';
@@ -267,7 +266,7 @@ class Action
 
         $data = new Bag($workflowNodeState ? unserialize($workflowNodeState->data) : []);
         $generator = new TextGenerator();
-        \Log::info("To Rendere:".$workflowNode->data);
+        \Log::info('To Rendere:'.$workflowNode->data);
         $rendered = $generator->generateAndRender($workflowNode->data, $data->toArray());
         $data = $data->merge(Yaml::parse($rendered));
 

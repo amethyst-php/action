@@ -4,9 +4,6 @@ namespace Amethyst\Services;
 
 use Illuminate\Queue\SerializesModels;
 use Railken\Bag as BaseBag;
-use ReflectionClass;
-use Illuminate\Contracts\Queue\QueueableEntity;
-use Illuminate\Contracts\Database\ModelIdentifier;
 
 class Bag extends BaseBag
 {
@@ -27,6 +24,7 @@ class Bag extends BaseBag
 
         return ['parameters'];
     }
+
     /**
      * Restore the model after serialization.
      *
