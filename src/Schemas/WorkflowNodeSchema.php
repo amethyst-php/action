@@ -21,12 +21,12 @@ class WorkflowNodeSchema extends Schema
                 ->setRelationName('workflow')
                 ->setRelationManager(WorkflowManager::class)
                 ->setRequired(true),
-            Attributes\EnumAttribute::make('target_type', app('amethyst')->getMorphListable('workflow-node', 'target'))
+            Attributes\EnumAttribute::make('target_type', app('amethyst')->getDataNames())
                 ->setRequired(true),
             Attributes\MorphToAttribute::make('target_id')
                 ->setRelationKey('target_type')
                 ->setRelationName('target')
-                ->setRelations(app('amethyst')->getMorphRelationable('workflow-node', 'target'))
+                ->setRelations(app('amethyst')->getDataManagers())
                 ->setRequired(true),
             Attributes\LongTextAttribute::make('data'),
             Attributes\YamlAttribute::make('output'),
