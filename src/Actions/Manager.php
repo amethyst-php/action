@@ -14,7 +14,6 @@ class Manager extends Action
         $parameters = $data->parameters;
 
         $manager = app('amethyst')->findManagerByName($data->name);
-        $manager = new $manager();
 
         $filter = new Filter($manager->newEntity()->getTable(), ['*']);
 
