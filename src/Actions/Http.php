@@ -55,8 +55,6 @@ class Http extends Action
             'body' => $body
         ]);
         
-        \Log::info("Http Request: ".json_encode($data->get('response')));
-
         $this->done($data);
     }
 }

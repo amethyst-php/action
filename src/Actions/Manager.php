@@ -22,8 +22,6 @@ class Manager extends Action
 
     	$filter = new Filter($manager->newEntity()->getTable(), ['*']);
 
-        \Log::info(sprintf("Workflow - Manager: %s, %s, %s", $data->action, $data->name, json_encode($parameters)));
-
     	if ($data->action === 'create') {
     		$manager->createOrFail($parameters);
     	}

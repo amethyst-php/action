@@ -26,13 +26,9 @@ class Switcher extends Action
             });
 
 
-        \Log::info(sprintf("Workflow - Switcher: %s, checking channels: %s, %s", $workflowNode->id, $nextNodes->count(), json_encode($data->channels)));
-
         // For each sibling compare id and condition
         $nextNodes = $nextNodes->filter(function (WorkflowNode $sibling) use ($data) {
             $expression = $data->channels[$sibling->id];
-
-            \Log::info(sprintf("Workflow - Switcher: %s, %s", $sibling->id, $expression));
 
             $rule = new Rule($expression, []);
 

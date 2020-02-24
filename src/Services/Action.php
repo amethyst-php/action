@@ -45,8 +45,6 @@ class Action
 
     public function starter()
     {
-        \Log::info("Workflow - Checking");
-
         $this->dispatchByRelations();
         $this->dispatchByWorkflowNodeState();
         $this->boot();
@@ -102,8 +100,6 @@ class Action
             ->where('target_type', 'workflow-node')
             ->get();
 
-        \Log::info(sprintf("Workflow - Checking relations to start: %s", $results->count()));
-
         $results->filter(function ($relation) {
             return $relation->source->enabled;
         })->map(function ($relation) {
@@ -138,13 +134,6 @@ class Action
 
     public function dispatch($workflowNode, $workflowNodeState = null)
     {
-        \Log::info(sprintf(
-            "Workflow - Dispatching Workflow %s, WorkflowNode: %s with state %s", 
-            $workflowNode->workflow->id,
-            $workflowNode->id, 
-            $workflowNodeState->id ?? null
-        ));
-
         // This is currently running
         // Doing this way well'avoid to re-execute twice the same worfklow
         if ($workflowNodeState) {
@@ -164,13 +153,6 @@ class Action
         $class = $this->getType($payload->class);
 
         $executed = function ($data, $allowedNextNodes = null) use ($workflowNode, $workflowNodeState) {
-
-            \Log::info(sprintf(
-                "Workflow - Executing Workflow %s, WorkflowNode: %s with state %s", 
-                $workflowNode->workflow->id,
-                $workflowNode->id, 
-                $workflowNodeState->id ?? null
-            ));
 
             // Define a new state for the workflow
             if (!$workflowNodeState) {
@@ -217,9 +199,6 @@ class Action
                 
             // If there is no next nodes, than the workflow instance should be terminated
             if ($nextNodes->count() === 0) {
-
-                \Log::info(sprintf("Workflow - Terminating %s", $workflowNode->workflow->id));
-
                 $workflowState->state = 'done';
                 $workflowState->save();
             }
@@ -233,12 +212,6 @@ class Action
             $nextNodes->map(function ($relation) use ($workflowState, $data) {
 
                 $workflowNode = $relation->target;
-
-                \Log::info(sprintf(
-                    "Workflow - Activating siblings Workflow %s, WorkflowNode: %s", 
-                    $workflowNode->workflow->id,
-                    $workflowNode->id
-                ));
 
                 $this->workflowNodeStateManager->createOrFail([
                     'workflow_node_id'  => $workflowNode->id,
@@ -259,7 +232,6 @@ class Action
         $released = function ($data) use ($workflowNodeState) {
 
             if ($workflowNodeState) {
-                \Log::info(sprintf("Terminating - Executing WorkflowNode: %s with state %s", $workflowNodeState->workflow_node->id, $workflowNodeState->id ?? null));
 
                 if ($workflowNodeState) {
                     $workflowNodeState->state = 'wait';
@@ -274,7 +246,6 @@ class Action
 
         $data = new Bag($workflowNodeState ? unserialize($workflowNodeState->data) : []);
         $generator = new TextGenerator();
-        \Log::info("To Rendere:".$workflowNode->data);
         $rendered = $generator->generateAndRender($workflowNode->data, $data->toArray());
         $data = $data->merge(Yaml::parse($rendered));
 
