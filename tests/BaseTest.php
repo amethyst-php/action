@@ -12,6 +12,7 @@ abstract class BaseTest extends \Orchestra\Testbench\TestCase
         parent::setUp();
 
         $this->artisan('migrate:fresh');
+        app('eloquent.mapper')->boot();
     }
 
     protected function getPackageProviders($app)

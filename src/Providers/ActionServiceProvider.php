@@ -63,7 +63,7 @@ class ActionServiceProvider extends CommonServiceProvider
 
         Router::group('app', Arr::get($config, 'router'), function ($router) use ($config) {
             $controller = Arr::get($config, 'controller');
-            $router->get('/', ['as' => 'show', 'uses' => $controller.'@execute']);
+            $router->post('/', ['as' => 'show', 'uses' => $controller.'@execute']);
         });
     }
 }
