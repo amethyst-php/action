@@ -20,9 +20,9 @@ class WorkflowSchema extends Schema
                 ->setRequired(true)
                 ->setUnique(true),
             Attributes\LongTextAttribute::make('description'),
-            Attributes\BooleanAttribute::make('enabled')
+            Attributes\BooleanAttribute::make('autostart')
                 ->setDefault(function ($entity) {
-                    return 1;
+                    return 0;
                 }),
             Attributes\CreatedAtAttribute::make(),
             Attributes\UpdatedAtAttribute::make(),

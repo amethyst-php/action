@@ -12,6 +12,8 @@ use Amethyst\Observers\WorkflowNodeObserver;
 use Amethyst\Observers\WorkflowObserver;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
+use Amethyst\Core\Support\Router;
+use Illuminate\Support\Arr;
 
 class ActionServiceProvider extends CommonServiceProvider
 {
@@ -37,16 +39,6 @@ class ActionServiceProvider extends CommonServiceProvider
     {
         parent::boot();
 
-        /*
-        app('amethyst')->pushMorphRelation('workflow-node', 'target', 'workflow');
-        app('amethyst')->pushMorphRelation('workflow-node', 'target', 'action');
-
-        app('amethyst')->pushMorphRelation('relation', 'source', 'workflow-node');
-        app('amethyst')->pushMorphRelation('relation', 'target', 'workflow-node');
-        app('amethyst')->pushMorphRelation('relation', 'source', 'workflow');
-        app('amethyst')->pushMorphRelation('relation', 'target', 'workflow');
-        */
-
         app('amethyst.action')->addType('log', Actions\Log::class);
         app('amethyst.action')->addType('listener', Actions\Listener::class);
         app('amethyst.action')->addType('data', Actions\Manager::class);
@@ -60,5 +52,18 @@ class ActionServiceProvider extends CommonServiceProvider
         Workflow::observe(WorkflowObserver::class);
         WorkflowNode::observe(WorkflowNodeObserver::class);
         Relation::observe(RelationObserver::class);
+    }
+
+    /**
+     * Load routes.
+     */
+    public function loadRoutes()
+    {
+        $config = Config::get('amethyst.action.http.app.workflow');
+
+        Router::group('app', Arr::get($config, 'router'), function ($router) use ($config) {
+            $controller = Arr::get($config, 'controller');
+            $router->get('/', ['as' => 'show', 'uses' => $controller.'@execute']);
+        });
     }
 }

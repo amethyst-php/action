@@ -8,11 +8,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Railken\Lem\Contracts\EntityContract;
+use Amethyst\Concerns\ActionNodeHelper;
 
 class WorkflowNode extends Model implements EntityContract
 {
     use SoftDeletes;
     use ConfigurableModel;
+    use ActionNodeHelper;
 
     /**
      * Create a new Eloquent model instance.

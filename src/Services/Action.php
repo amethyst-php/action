@@ -101,7 +101,7 @@ class Action
         \Log::info(sprintf('Workflow - Checking relations to start: %s', $results->count()));
 
         $results->filter(function ($relation) {
-            return $relation->source->enabled;
+            return $relation->source->autostart;
         })->map(function ($relation) {
             return $this->dispatch($relation->target);
         });
@@ -118,6 +118,12 @@ class Action
                 return $this->dispatch($workflowNodeState->workflow_node, $workflowNodeState);
             });
     }
+
+    public function dispatchByWorkflow($workflow)
+    {
+        $this->dispatch($workflow->relations->first());
+    }
+
 
     public function dispatchBySameWorkflowNodeState($workflowState)
     {

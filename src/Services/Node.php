@@ -26,6 +26,7 @@ class Node
         $this->workflow = $this->workflowManager->createOrFail([
             'name' => $this->name,
         ])->getResource();
+        $this->lastNode = $this->workflow;
     }
 
     public function next()
