@@ -2,18 +2,12 @@
 
 namespace Amethyst\Tests;
 
-use Amethyst\Managers\ActionManager;
-use Amethyst\Managers\RelationManager;
-use Amethyst\Managers\WorkflowManager;
-use Amethyst\Managers\WorkflowNodeManager;
-use Symfony\Component\Yaml\Yaml;
-
 class ExecutionTest extends BaseTest
 {
     public function testExecution()
     {
         $workflow = app('amethyst')->get('workflow')->createOrFail([
-            'name' => 'test-1'
+            'name' => 'test-1',
         ])->getResource();
 
         $node = $workflow->next('data', [
@@ -35,7 +29,7 @@ class ExecutionTest extends BaseTest
     public function testExecutionApi()
     {
         $workflow = app('amethyst')->get('workflow')->createOrFail([
-            'name' => 'test-1'
+            'name' => 'test-1',
         ])->getResource();
 
         $node = $workflow->next('data', [
@@ -46,8 +40,8 @@ class ExecutionTest extends BaseTest
             ],
         ]);
 
-        $response = $this->json("POST", "api/workflow/execute", [
-            'query' => 'id eq 1'
+        $response = $this->json('POST', 'api/workflow/execute', [
+            'query' => 'id eq 1',
         ]);
 
         $response->assertStatus(200);

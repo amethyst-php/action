@@ -2,12 +2,12 @@
 
 namespace Amethyst\Models;
 
+use Amethyst\Concerns\ActionNodeHelper;
 use Amethyst\Core\ConfigurableModel;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Railken\Lem\Contracts\EntityContract;
-use Amethyst\Concerns\ActionNodeHelper;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Workflow extends Model implements EntityContract
 {
@@ -24,11 +24,10 @@ class Workflow extends Model implements EntityContract
         parent::__construct($attributes);
     }
 
-
     public function relations(): MorphToMany
     {
         return $this->morphToMany(
-            WorkflowNode::class, 
+            WorkflowNode::class,
             'source',
             config('amethyst.relation.data.relation.table'),
             'source_id',

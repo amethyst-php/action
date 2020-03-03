@@ -2,13 +2,13 @@
 
 namespace Amethyst\Models;
 
+use Amethyst\Concerns\ActionNodeHelper;
 use Amethyst\Core\ConfigurableModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Railken\Lem\Contracts\EntityContract;
-use Amethyst\Concerns\ActionNodeHelper;
 
 class WorkflowNode extends Model implements EntityContract
 {

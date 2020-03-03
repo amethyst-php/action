@@ -2,12 +2,10 @@
 
 namespace Amethyst\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Railken\LaraEye\Exceptions\FilterSyntaxException;
-use Railken\Lem\Result;
-use Symfony\Component\HttpFoundation\Response;
 use Amethyst\Core\Http\Controllers\RestManagerController;
+use Illuminate\Http\Request;
+use Railken\LaraEye\Exceptions\FilterSyntaxException;
+use Symfony\Component\HttpFoundation\Response;
 
 class WorkflowController extends RestManagerController
 {
@@ -34,7 +32,7 @@ class WorkflowController extends RestManagerController
         }
 
         app('amethyst.action')->dispatchByWorkflow($query->first());
-        
+
         return $this->response([], Response::HTTP_OK);
     }
 }

@@ -124,7 +124,6 @@ class Action
         $this->dispatch($workflow->relations->first());
     }
 
-
     public function dispatchBySameWorkflowNodeState($workflowState)
     {
         $this->workflowNodeStateManager

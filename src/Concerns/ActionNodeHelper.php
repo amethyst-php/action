@@ -6,9 +6,9 @@ use Symfony\Component\Yaml\Yaml;
 
 trait ActionNodeHelper
 {
-	public function next(string $type, array $params)
-	{
-		$action = app('amethyst')->get('action')->findOrCreateOrFail([
+    public function next(string $type, array $params)
+    {
+        $action = app('amethyst')->get('action')->findOrCreateOrFail([
             'name'    => $type,
             'payload' => Yaml::dump([
                 'class'     => $type,
@@ -16,7 +16,7 @@ trait ActionNodeHelper
             ]),
         ])->getResource();
 
-		$target = app('amethyst')->get('workflow-node')->createOrFail([
+        $target = app('amethyst')->get('workflow-node')->createOrFail([
             'workflow_id' => $this->getMorphName() === 'workflow' ? $this->id : $this->workflow->id,
             'target_type' => 'action',
             'target_id'   => $action->id,
@@ -24,7 +24,7 @@ trait ActionNodeHelper
         ])->getResource();
 
         $this->relations()->attach($target);
-        
+
         return $target;
-	}
+    }
 }

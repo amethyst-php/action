@@ -14,8 +14,8 @@ return [
             'enabled'    => true,
             'controller' => Amethyst\Http\Controllers\WorkflowController::class,
             'router'     => [
-                'prefix'     => '/workflow/execute',
-                'as'         => 'workflow.execute.',
+                'prefix' => '/workflow/execute',
+                'as'     => 'workflow.execute.',
             ],
         ],
     ],

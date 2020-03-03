@@ -4,16 +4,16 @@ namespace Amethyst\Providers;
 
 use Amethyst\Actions;
 use Amethyst\Core\Providers\CommonServiceProvider;
+use Amethyst\Core\Support\Router;
 use Amethyst\Models\Relation;
 use Amethyst\Models\Workflow;
 use Amethyst\Models\WorkflowNode;
 use Amethyst\Observers\RelationObserver;
 use Amethyst\Observers\WorkflowNodeObserver;
 use Amethyst\Observers\WorkflowObserver;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
-use Amethyst\Core\Support\Router;
-use Illuminate\Support\Arr;
 
 class ActionServiceProvider extends CommonServiceProvider
 {
