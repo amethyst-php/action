@@ -7,6 +7,7 @@ use Amethyst\Core\ConfigurableModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Railken\Lem\Contracts\EntityContract;
 
@@ -33,5 +34,19 @@ class WorkflowNode extends Model implements EntityContract
     public function target(): MorphTo
     {
         return $this->morphTo();
+    } 
+
+    public function relations(): MorphToMany
+    {
+        return $this->morphToMany(
+            WorkflowNode::class,
+            'source',
+            config('amethyst.relation.data.relation.table'),
+            'source_id',
+            'target_id'
+        )
+        ->withPivotValue('target_type', 'workflow-node')
+        ->using(config('amethyst.relation.data.relation.model'))
+        ->withPivotValue('key', 'relations');
     }
 }
