@@ -31,7 +31,10 @@ class WorkflowController extends RestManagerController
             return $this->error(['code' => 'QUERY_SYNTAX_ERROR', 'message' => $e->getMessage()]);
         }
 
-        app('amethyst.action')->dispatchByWorkflow($query->first());
+        $data = (array) $request->input('data', []);
+        $data['__agent'] = $this->getUser();
+        
+        app('amethyst.action')->dispatchByWorkflow($query->first(), $data);
 
         return $this->response([], Response::HTTP_OK);
     }

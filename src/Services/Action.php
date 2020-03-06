@@ -119,9 +119,9 @@ class Action
             });
     }
 
-    public function dispatchByWorkflow($workflow)
+    public function dispatchByWorkflow($workflow, array $data = [])
     {
-        $this->dispatch($workflow->relations->first());
+        $this->dispatch($workflow->relations->first(), null, $data);
     }
 
     public function dispatchBySameWorkflowNodeState($workflowState)
@@ -137,7 +137,7 @@ class Action
             });
     }
 
-    public function dispatch($workflowNode, $workflowNodeState = null)
+    public function dispatch($workflowNode, $workflowNodeState = null, $parameterData = [])
     {
         \Log::info(sprintf(
             'Workflow - Dispatching Workflow %s, WorkflowNode: %s with state %s',
@@ -167,10 +167,11 @@ class Action
 
         $executed = function ($data, $allowedNextNodes = null) use ($workflowNode, $workflowNodeState) {
             \Log::info(sprintf(
-                'Workflow - Executing Workflow %s, WorkflowNode: %s with state %s',
+                'Workflow - Executing Workflow `%s`, WorkflowNode: `%s` with state `%s` and data %s',
                 $workflowNode->workflow->id,
                 $workflowNode->id,
-                $workflowNodeState->id ?? null
+                $workflowNodeState->id ?? null,
+                json_encode($data->toArray())
             ));
 
             // Define a new state for the workflow
@@ -269,9 +270,11 @@ class Action
 
         $actioner = new $class($executed, $released);
 
-        $data = new Bag($workflowNodeState ? unserialize($workflowNodeState->data) : []);
+        $data = new Bag($workflowNodeState ? unserialize($workflowNodeState->data) : $parameterData);
         $generator = new TextGenerator();
-        \Log::info('To Rendere:'.$workflowNode->data);
+
+        \Log::info('Rendering data pre-action: '.$workflowNode->data);
+        
         $rendered = $generator->generateAndRender($workflowNode->data, $data->toArray());
         $data = $data->merge(Yaml::parse($rendered));
 
