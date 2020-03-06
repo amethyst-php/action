@@ -28,7 +28,7 @@ class WorkflowNodeSchema extends Schema
                 ->setRelationName('target')
                 ->setRelations(app('amethyst')->getDataManagers())
                 ->setRequired(true),
-            Attributes\LongTextAttribute::make('data'),
+            Attributes\YamlAttribute::make('data'),
             Attributes\YamlAttribute::make('output'),
             Attributes\CreatedAtAttribute::make(),
             Attributes\UpdatedAtAttribute::make(),
