@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'table'      => 'amethyst_actions',
+    'table'      => 'action',
     'comment'    => 'Action',
     'model'      => Amethyst\Models\Action::class,
     'schema'     => Amethyst\Schemas\ActionSchema::class,

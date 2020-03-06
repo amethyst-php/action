@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'table'      => 'amethyst_workflow_nodes',
+    'table'      => 'workflow_node',
     'comment'    => 'WorkflowNode',
     'model'      => Amethyst\Models\WorkflowNode::class,
     'schema'     => Amethyst\Schemas\WorkflowNodeSchema::class,
