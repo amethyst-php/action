@@ -23,7 +23,7 @@ class Manager extends Action
             $manager->createOrFail($parameters);
         }
 
-        if (in_array($data->action, ['update', 'remove'])) {
+        if (in_array($data->action, ['update', 'remove'], true)) {
             $string = $data->query;
             $query = $manager->getRepository()->newQuery();
 
@@ -40,7 +40,7 @@ class Manager extends Action
             }
         }
 
-        if (in_array($data->action, ['get', 'first'])) {
+        if (in_array($data->action, ['get', 'first'], true)) {
             $string = $data->query;
             $query = $manager->getRepository()->newQuery();
 

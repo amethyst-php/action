@@ -33,7 +33,7 @@ class WorkflowController extends RestManagerController
 
         $data = (array) $request->input('data', []);
         $data['__agent'] = $this->getUser();
-        
+
         app('amethyst.action')->dispatchByWorkflow($query->first(), $data);
 
         return $this->response([], Response::HTTP_OK);

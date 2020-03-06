@@ -274,7 +274,7 @@ class Action
         $generator = new TextGenerator();
 
         \Log::info('Rendering data pre-action: '.$workflowNode->data);
-        
+
         $rendered = $generator->generateAndRender($workflowNode->data, $data->toArray());
         $data = $data->merge(Yaml::parse($rendered));
 

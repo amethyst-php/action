@@ -34,7 +34,7 @@ class WorkflowNode extends Model implements EntityContract
     public function target(): MorphTo
     {
         return $this->morphTo();
-    } 
+    }
 
     public function relations(): MorphToMany
     {
