@@ -9,18 +9,19 @@ use Amethyst\Services\Bag;
 use nicoSWD\Rules\Rule;
 use Illuminate\Support\Facades\Log;
 use Amethyst\Notifications\BaseNotification;
+use App\Events\NotificationEvent;
 
 class Notification extends Action
 {
     public function handle(Bag $data, WorkflowNode $workflowNode, WorkflowNodeState $nodeState = null)
     {
-        print_r($data);
-
         $agents = app('amethyst')->get($data->get('agent.data'))->newEntity()->filter($data->get('agent.filter'))->get();
 
         foreach ($agents as $agent) {
             $agent->notify(new BaseNotification($data->get('message'), $data->get('vars')));
+         	event(new NotificationEvent($agent, env('APP_NAME'), $data->get('message')));
         }
+
 
         $this->done($data);
     }
