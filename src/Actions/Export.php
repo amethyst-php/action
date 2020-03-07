@@ -79,7 +79,7 @@ class Export
             ])
             ->toMediaCollection('exporter');
 
-        return $result;
+        $data->set('file', $resource);
     }
 
     public function getMimeType()
