@@ -6,6 +6,7 @@ use Amethyst\Core\Http\Controllers\RestManagerController;
 use Illuminate\Http\Request;
 use Railken\LaraEye\Exceptions\FilterSyntaxException;
 use Symfony\Component\HttpFoundation\Response;
+use Amethyst\Jobs\DispatchWorkflow;
 
 class WorkflowController extends RestManagerController
 {
@@ -30,11 +31,21 @@ class WorkflowController extends RestManagerController
         } catch (FilterSyntaxException $e) {
             return $this->error(['code' => 'QUERY_SYNTAX_ERROR', 'message' => $e->getMessage()]);
         }
+            
+        $workflow = $query->first();
 
         $data = (array) $request->input('data', []);
+
         $data['__agent'] = $this->getUser();
 
-        app('amethyst.action')->dispatchByWorkflow($query->first(), $data);
+        $job = new DispatchWorkflow($workflow, $data);
+
+
+        if ($request->input('queue', 0)) {
+            dispatch($job);
+        } else {
+            $job->handle();
+        }
 
         return $this->response([], Response::HTTP_OK);
     }
