@@ -26,6 +26,7 @@ class ActionServiceProvider extends CommonServiceProvider
 
         $this->app->register(\Amethyst\Providers\RelationServiceProvider::class);
         $this->app->register(\Amethyst\Providers\FileServiceProvider::class);
+        $this->app->register(\Amethyst\Providers\NotificationServiceProvider::class);
         $this->app->register(\Railken\Template\TemplateServiceProvider::class);
 
         $this->app->singleton('amethyst.action', function ($app) {
@@ -46,6 +47,7 @@ class ActionServiceProvider extends CommonServiceProvider
         app('amethyst.action')->addType('switcher', Actions\Switcher::class);
         app('amethyst.action')->addType('http', Actions\Http::class);
         app('amethyst.action')->addType('exporter', Actions\Exporter::class);
+        app('amethyst.action')->addType('notification', Actions\Notification::class);
 
         if (Schema::hasTable(Config::get('amethyst.action.data.action.table'))) {
             app('amethyst.action')->starter();
