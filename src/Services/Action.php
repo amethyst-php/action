@@ -12,12 +12,17 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
 use Railken\Template\Generators\TextGenerator;
 use Symfony\Component\Yaml\Yaml;
+use Illuminate\Support\Facades\Log;
 
 class Action
 {
     protected $types = [];
     protected $enabled = false;
     protected $events = [];
+    protected $workflowNodeStateManager;
+    protected $workflowStateManager;
+    protected $relationManager;
+    protected $workflowNodeManager;
 
     public function __construct()
     {
@@ -44,7 +49,7 @@ class Action
 
     public function starter()
     {
-        \Log::info('Workflow - Checking');
+        Log::debug('Workflow - Checking');
 
         $this->dispatchByRelations();
         $this->dispatchByWorkflowNodeState();
@@ -98,7 +103,7 @@ class Action
             ->where('target_type', 'workflow-node')
             ->get();
 
-        \Log::info(sprintf('Workflow - Checking relations to start: %s', $results->count()));
+        Log::debug(sprintf('Workflow - Checking relations to start: %s', $results->count()));
 
         $results->filter(function ($relation) {
             return $relation->source->autostart;
@@ -139,7 +144,7 @@ class Action
 
     public function dispatch($workflowNode, $workflowNodeState = null, $parameterData = [])
     {
-        \Log::info(sprintf(
+        Log::debug(sprintf(
             'Workflow - Dispatching Workflow %s, WorkflowNode: %s with state %s',
             $workflowNode->workflow->id,
             $workflowNode->id,
@@ -158,7 +163,7 @@ class Action
         $payload = (object) Yaml::parse($action->payload);
 
         if (!isset($payload->class)) {
-            \Log::warning(sprintf('Error with workflow, missing class'));
+            Log::warning(sprintf('Error with workflow, missing class'));
 
             return;
         }
@@ -166,7 +171,7 @@ class Action
         $class = $this->getType($payload->class);
 
         $executed = function ($data, $allowedNextNodes = null) use ($workflowNode, $workflowNodeState) {
-            \Log::info(sprintf(
+            Log::debug(sprintf(
                 'Workflow - Executing Workflow `%s`, WorkflowNode: `%s` with state `%s` and data %s',
                 $workflowNode->workflow->id,
                 $workflowNode->id,
@@ -219,7 +224,7 @@ class Action
 
             // If there is no next nodes, than the workflow instance should be terminated
             if ($nextNodes->count() === 0) {
-                \Log::info(sprintf('Workflow - Terminating %s', $workflowNode->workflow->id));
+                Log::debug(sprintf('Workflow - Terminating %s', $workflowNode->workflow->id));
 
                 $workflowState->state = 'done';
                 $workflowState->save();
@@ -234,7 +239,7 @@ class Action
             $nextNodes->map(function ($relation) use ($workflowState, $data) {
                 $workflowNode = $relation->target;
 
-                \Log::info(sprintf(
+                Log::debug(sprintf(
                     'Workflow - Activating siblings Workflow %s, WorkflowNode: %s',
                     $workflowNode->workflow->id,
                     $workflowNode->id
@@ -258,7 +263,7 @@ class Action
 
         $released = function ($data) use ($workflowNodeState) {
             if ($workflowNodeState) {
-                \Log::info(sprintf('Terminating - Executing WorkflowNode: %s with state %s', $workflowNodeState->workflow_node->id, $workflowNodeState->id ?? null));
+                Log::debug(sprintf('Terminating - Executing WorkflowNode: %s with state %s', $workflowNodeState->workflow_node->id, $workflowNodeState->id ?? null));
 
                 if ($workflowNodeState) {
                     $workflowNodeState->state = 'wait';
@@ -273,7 +278,7 @@ class Action
         $data = new Bag($workflowNodeState ? unserialize($workflowNodeState->data) : $parameterData);
         $generator = new TextGenerator();
 
-        \Log::info('Rendering data pre-action: '.$workflowNode->data);
+        Log::debug('Rendering data pre-action: '.$workflowNode->data);
 
         $rendered = $generator->generateAndRender($workflowNode->data, $data->toArray());
         $data = $data->merge(Yaml::parse($rendered));

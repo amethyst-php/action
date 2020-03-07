@@ -6,6 +6,7 @@ use Amethyst\Core\ConfigurableManager;
 use Amethyst\Jobs\Action as Job;
 use Amethyst\Models\Action;
 use Railken\Lem\Manager;
+use Railken\Lem\Result;
 
 class ActionManager extends Manager
 {
@@ -27,22 +28,8 @@ class ActionManager extends Manager
             return $result;
         }
 
-        dispatch(new Job($action, $data));
+        dispatch(new Job($action, function () { }, $data));
 
         return $result;
-    }
-
-    /**
-     * Describe extra actions.
-     *
-     * @return array
-     */
-    public function getDescriptor()
-    {
-        return [
-            'actions' => [
-                'executor',
-            ],
-        ];
     }
 }

@@ -6,7 +6,7 @@ use Symfony\Component\Yaml\Yaml;
 
 trait ActionNodeHelper
 {
-    public function new(string $type, array $params, array $output = [])
+    public function new(string $type, array $params, array $output = [], array $arguments = [])
     {
         $action = app('amethyst')->get('action')->findOrCreateOrFail([
             'name'    => $type,
@@ -22,14 +22,15 @@ trait ActionNodeHelper
             'target_id'   => $action->id,
             'data'        => Yaml::dump($params),
             'output'      => Yaml::dump($output),
+            'arguments'   => Yaml::dump($arguments),
         ])->getResource();
 
         return $target;
     }
 
-    public function next(string $type, array $params, array $output = [])
+    public function next(string $type, array $params, array $output = [], array $arguments = [])
     {
-        $target = $this->new($type, $params, $output);
+        $target = $this->new($type, $params, $output, $arguments);
 
         $this->relations()->attach($target);
 

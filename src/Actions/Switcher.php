@@ -7,6 +7,7 @@ use Amethyst\Models\WorkflowNode;
 use Amethyst\Models\WorkflowNodeState;
 use Amethyst\Services\Bag;
 use nicoSWD\Rules\Rule;
+use Illuminate\Support\Facades\Log;
 
 class Switcher extends Action
 {
@@ -21,13 +22,13 @@ class Switcher extends Action
                 return $relation->target;
             });
 
-        \Log::info(sprintf('Workflow - Switcher: %s, checking channels: %s, %s', $workflowNode->id, $nextNodes->count(), json_encode($data->channels)));
+        Log::debug(sprintf('Workflow - Switcher: %s, checking channels: %s, %s', $workflowNode->id, $nextNodes->count(), json_encode($data->channels)));
 
         // For each sibling compare id and condition
         $nextNodes = $nextNodes->filter(function (WorkflowNode $sibling) use ($data) {
             $expression = $data->channels[$sibling->id];
 
-            \Log::info(sprintf('Workflow - Switcher: %s, %s', $sibling->id, $expression));
+            Log::debug(sprintf('Workflow - Switcher: %s, %s', $sibling->id, $expression));
 
             $rule = new Rule($expression, []);
 

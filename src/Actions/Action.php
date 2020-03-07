@@ -10,6 +10,8 @@ class Action
     protected $data;
     protected static $events;
     protected static $booted = false;
+    protected $executed;
+    protected $released;
 
     public function __construct(Closure $executed, Closure $released)
     {

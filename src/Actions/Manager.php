@@ -6,6 +6,7 @@ use Amethyst\Models\WorkflowNode;
 use Amethyst\Models\WorkflowNodeState;
 use Amethyst\Services\Bag;
 use Railken\LaraEye\Filter;
+use Illuminate\Support\Facades\Log;
 
 class Manager extends Action
 {
@@ -17,7 +18,7 @@ class Manager extends Action
 
         $filter = new Filter($manager->newEntity()->getTable(), ['*']);
 
-        \Log::info(sprintf('Workflow - Manager: %s, %s, %s', $data->action, $data->name, json_encode($parameters)));
+        Log::debug(sprintf('Workflow - Manager: %s, %s, %s', $data->action, $data->name, json_encode($parameters)));
 
         if ($data->action === 'create') {
             $manager->createOrFail($parameters);

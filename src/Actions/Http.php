@@ -5,6 +5,7 @@ namespace Amethyst\Actions;
 use Amethyst\Models\WorkflowNode;
 use Amethyst\Models\WorkflowNodeState;
 use Amethyst\Services\Bag;
+use Illuminate\Support\Facades\Log;
 
 class Http extends Action
 {
@@ -45,7 +46,7 @@ class Http extends Action
             'body'       => $body,
         ]);
 
-        \Log::info('Http Request: '.json_encode($data->get('response')));
+        Log::debug('Http Request: '.json_encode($data->get('response')));
 
         $this->done($data);
     }

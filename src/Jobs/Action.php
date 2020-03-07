@@ -40,6 +40,6 @@ class Action implements ShouldQueue
     public function handle()
     {
         $this->action->storeState('running');
-        $this->action->handle($next, $data);
+        $this->action->handle($this->next, $this->data);
     }
 }
