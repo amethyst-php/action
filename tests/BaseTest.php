@@ -2,6 +2,8 @@
 
 namespace Amethyst\Tests;
 
+use Illuminate\Support\Facades\File;
+
 abstract class BaseTest extends \Orchestra\Testbench\TestCase
 {
     /**
@@ -11,7 +13,17 @@ abstract class BaseTest extends \Orchestra\Testbench\TestCase
     {
         parent::setUp();
 
+        File::cleanDirectory(database_path('migrations/'));
+
         $this->artisan('migrate:fresh');
+
+        $this->artisan('vendor:publish', [
+            '--provider' => 'Spatie\MediaLibrary\MediaLibraryServiceProvider',
+            '--force'    => true,
+        ]);
+
+        $this->artisan('migrate');
+
         app('eloquent.mapper')->boot();
     }
 
