@@ -24,7 +24,7 @@ class Exporter extends Action
     {
         $types = [
             'csv' => ExportCsv::class,
-            'xls' => ExportXls::class
+            'xlsx' => ExportXls::class
         ];
 
         $export = new $types[$data->type];
