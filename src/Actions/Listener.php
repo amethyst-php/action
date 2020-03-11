@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 class Listener extends Action
 {
     protected $id;
-    
+
     public function handle(Bag $data, WorkflowNode $workflowNode, WorkflowNodeState $nodeState = null)
     {
         $this->id = $nodeState ? 'S'.$nodeState->id : 'N'.$workflowNode->id;

@@ -10,9 +10,9 @@ use Amethyst\Models\Relation;
 use Closure;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use Railken\Template\Generators\TextGenerator;
 use Symfony\Component\Yaml\Yaml;
-use Illuminate\Support\Facades\Log;
 
 class Action
 {

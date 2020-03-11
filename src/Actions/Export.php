@@ -2,19 +2,10 @@
 
 namespace Amethyst\Actions;
 
-use Amethyst\Contracts\GenerateExportContract;
-use Amethyst\Exceptions\FormattingException;
 use Amethyst\Managers\FileManager;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Config;
-use Railken\Lem\Contracts\AgentContract;
-use Railken\Template\Generators;
-use Symfony\Component\Yaml\Yaml;
 use Amethyst\Services\Bag;
+use Illuminate\Support\Facades\Config;
+use Railken\Template\Generators;
 
 class Export
 {
@@ -50,7 +41,7 @@ class Export
         $query->chunk(100, function ($resources) use ($writer, $genFile, $generator, $data) {
             foreach ($resources as $resource) {
                 $encoded = strval($generator->render($genFile, array_merge($data->toArray(), [
-                    'resource' => $resource
+                    'resource' => $resource,
                 ])));
 
                 $encoded = preg_replace('/\t+/', '\\\\t', strval($encoded));
@@ -64,7 +55,7 @@ class Export
                 }
 
                 $this->write($writer, $value);
-            };
+            }
         });
 
         $fm = new FileManager();

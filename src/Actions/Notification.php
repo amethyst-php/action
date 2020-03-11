@@ -2,13 +2,10 @@
 
 namespace Amethyst\Actions;
 
-use Amethyst\Models\Relation;
 use Amethyst\Models\WorkflowNode;
 use Amethyst\Models\WorkflowNodeState;
-use Amethyst\Services\Bag;
-use nicoSWD\Rules\Rule;
-use Illuminate\Support\Facades\Log;
 use Amethyst\Notifications\BaseNotification;
+use Amethyst\Services\Bag;
 use App\Events\NotificationEvent;
 
 class Notification extends Action
@@ -19,9 +16,8 @@ class Notification extends Action
 
         foreach ($agents as $agent) {
             $agent->notify(new BaseNotification($data->get('message'), $data->get('vars')));
-         	event(new NotificationEvent($agent, env('APP_NAME'), $data->get('message')));
+            event(new NotificationEvent($agent, env('APP_NAME'), $data->get('message')));
         }
-
 
         $this->done($data);
     }

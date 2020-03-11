@@ -12,19 +12,17 @@ class NotificationTest extends BaseTest
 
         $node = $workflow->next('notification', [
             'agent' => [
-                'data' => 'foo',
-                'filter' => 'id != 0'
+                'data'   => 'foo',
+                'filter' => 'id != 0',
             ],
-            'message'    => 'foo',
-            'vars'      => ['uhm']
-        ]);
-        
-        app('amethyst')->get('foo')->createOrFail([
-            'name' => "Hello"
+            'message' => 'foo',
+            'vars'    => ['uhm'],
         ]);
 
+        app('amethyst')->get('foo')->createOrFail([
+            'name' => 'Hello',
+        ]);
 
         app('amethyst.action')->dispatchByWorkflow($workflow);
     }
-
 }

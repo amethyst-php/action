@@ -11,27 +11,25 @@ class ExportTest extends BaseTest
         ])->getResource();
 
         $node = $workflow->next('exporter', [
-            'type'       => 'csv',
-            'data'       => 'foo',
-            'filter'     => '',
-            'filename'   => 'myFile.csv',
+            'type'     => 'csv',
+            'data'     => 'foo',
+            'filter'   => '',
+            'filename' => 'myFile.csv',
         ], [], [
             'body' => [
-                'id' => '{{ resource.id }}',
+                'id'     => '{{ resource.id }}',
                 'myName' => '{{ resource.name }}',
-            ]
+            ],
         ]);
 
         app('amethyst')->get('foo')->createOrFail([
-            'name' => "Hello"
+            'name' => 'Hello',
         ]);
 
         app('amethyst.action')->dispatchByWorkflow($workflow);
-
 
         $result = app('amethyst')->get('file')->getRepository()->findAll();
 
         $this->assertEquals(1, $result->count());
     }
-
 }

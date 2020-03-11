@@ -5,8 +5,8 @@ namespace Amethyst\Actions;
 use Amethyst\Models\WorkflowNode;
 use Amethyst\Models\WorkflowNodeState;
 use Amethyst\Services\Bag;
-use Railken\LaraEye\Filter;
 use Illuminate\Support\Facades\Log;
+use Railken\LaraEye\Filter;
 
 class Manager extends Action
 {

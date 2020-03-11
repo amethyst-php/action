@@ -2,15 +2,12 @@
 
 namespace Amethyst\Jobs;
 
-use Amethyst\Actions\Action as BaseAction;
-use Amethyst\Services\Bag;
-use Closure;
+use Amethyst\Models\Workflow;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Amethyst\Models\Workflow;
 
 class DispatchWorkflow implements ShouldQueue
 {

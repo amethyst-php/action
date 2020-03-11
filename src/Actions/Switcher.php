@@ -6,8 +6,8 @@ use Amethyst\Models\Relation;
 use Amethyst\Models\WorkflowNode;
 use Amethyst\Models\WorkflowNodeState;
 use Amethyst\Services\Bag;
-use nicoSWD\Rules\Rule;
 use Illuminate\Support\Facades\Log;
+use nicoSWD\Rules\Rule;
 
 class Switcher extends Action
 {
