@@ -2,11 +2,11 @@
 
 namespace Amethyst\Actions;
 
+use Amethyst\Events\NotificationEvent;
 use Amethyst\Models\WorkflowNode;
 use Amethyst\Models\WorkflowNodeState;
 use Amethyst\Notifications\BaseNotification;
 use Amethyst\Services\Bag;
-use Amethyst\Events\NotificationEvent;
 
 class Notification extends Action
 {

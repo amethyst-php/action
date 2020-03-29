@@ -2,7 +2,7 @@
 
 namespace Amethyst\Events;
 
-use Amethyst\Models\WorkflowState; 
+use Amethyst\Models\WorkflowState;
 
 class WorkflowDone
 {
@@ -16,7 +16,6 @@ class WorkflowDone
      */
     public $data;
 
-
     /**
      * @var WorkflowState
      */
@@ -24,7 +23,7 @@ class WorkflowDone
 
     /**
      * @param WorkflowState $workflowState
-     * @param mixed $user
+     * @param mixed         $user
      */
     public function __construct(WorkflowState $workflowState, $data, $user)
     {
