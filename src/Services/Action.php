@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Railken\Template\Generators\TextGenerator;
 use Symfony\Component\Yaml\Yaml;
+use Illuminate\Support\Facades\Auth;
 
 class Action
 {
@@ -51,9 +52,9 @@ class Action
     {
         Log::debug('Workflow - Checking');
 
+        $this->boot();
         $this->dispatchByRelations();
         $this->dispatchByWorkflowNodeState();
-        $this->boot();
     }
 
     public function addEvent(string $uid, string $event, Closure $closure)
@@ -79,6 +80,7 @@ class Action
         $this->events = Collection::make();
 
         Event::listen(['*'], function ($eventName, $events) {
+
             if (count($events) === 0) {
                 return true;
             }
@@ -88,9 +90,12 @@ class Action
             $this->events->filter(function ($evt) use ($eventName) {
                 return $evt->class === $eventName;
             })->map(function ($action) use ($event) {
+
                 $closure = $action->execute;
                 $closure($event);
             });
+
+            return true;
         });
     }
 
@@ -228,6 +233,8 @@ class Action
 
                 $workflowState->state = 'done';
                 $workflowState->save();
+
+                event(new \Amethyst\Events\WorkflowDone($workflowState, $data->toArray(), $data->get('__agent')));
             }
 
             if ($allowedNextNodes !== null) {
