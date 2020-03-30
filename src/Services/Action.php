@@ -199,7 +199,6 @@ class Action
 
             if (count($output) > 0) {
                 foreach ($output as $key => $value) {
-
                     $output->set($key, \Illuminate\Support\Arr::get($data->toArray(), $value));
                 }
 
@@ -207,7 +206,6 @@ class Action
 
                 $data = new Bag($output);
             }
-
 
             // Define a new state for the node as done
             // First time executed, already done
@@ -237,7 +235,6 @@ class Action
 
                 $workflowState->state = 'done';
                 $workflowState->save();
-
 
                 Log::debug('WorkflowDone.Data: '.json_encode($data));
 
