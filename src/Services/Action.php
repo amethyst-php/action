@@ -196,11 +196,18 @@ class Action
 
             // Dot notation is applied
             // So key => target.value filter can be used
-            foreach ($output as $key => $value) {
-                $output->set($key, \Illuminate\Support\Arr::get($data->toArray(), $value));
+
+            if (count($output) > 0) {
+                foreach ($output as $key => $value) {
+
+                    $output->set($key, \Illuminate\Support\Arr::get($data->toArray(), $value));
+                }
+
+                $output->set('__agent', $data->get('__agent'));
+
+                $data = new Bag($output);
             }
 
-            $data = new Bag($output);
 
             // Define a new state for the node as done
             // First time executed, already done
@@ -230,6 +237,9 @@ class Action
 
                 $workflowState->state = 'done';
                 $workflowState->save();
+
+
+                Log::debug('WorkflowDone.Data: '.json_encode($data));
 
                 event(new \Amethyst\Events\WorkflowDone($workflowState, $data->toArray(), $data->get('__agent')));
             }
