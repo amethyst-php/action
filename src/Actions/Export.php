@@ -60,7 +60,9 @@ class Export
 
         $fm = new FileManager();
         $this->save($writer);
-        $result = $fm->create([]);
+        $result = $fm->createOrFail([
+            'name' => basename($filename),
+        ]);
         $resource = $result->getResource();
         $resource
             ->addMedia($filename)
