@@ -13,7 +13,6 @@ use Amethyst\Observers\WorkflowNodeObserver;
 use Amethyst\Observers\WorkflowObserver;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Schema;
 
 class ActionServiceProvider extends CommonServiceProvider
 {
@@ -49,7 +48,7 @@ class ActionServiceProvider extends CommonServiceProvider
         app('amethyst.action')->addType('exporter', Actions\Exporter::class);
         app('amethyst.action')->addType('notification', Actions\Notification::class);
 
-        if (Schema::hasTable(Config::get('amethyst.action.data.action.table'))) {
+        if (app('amethyst')->hasAllTables('amethyst.action.data')) {
             app('amethyst.action')->starter();
         }
 
