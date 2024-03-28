@@ -2,7 +2,7 @@
 
 namespace Amethyst\Tests;
 
-class NotificationTest extends BaseTest
+class NotificationTest extends Base
 {
     public function testNotification()
     {

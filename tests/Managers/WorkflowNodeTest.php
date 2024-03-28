@@ -4,10 +4,10 @@ namespace Amethyst\Tests\Managers;
 
 use Amethyst\Fakers\WorkflowNodeFaker;
 use Amethyst\Managers\WorkflowNodeManager;
-use Amethyst\Tests\BaseTest;
+use Amethyst\Tests\Base;
 use Railken\Lem\Support\Testing\TestableBaseTrait;
 
-class WorkflowNodeTest extends BaseTest
+class WorkflowNodeTest extends Base
 {
     use TestableBaseTrait;
 

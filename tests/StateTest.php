@@ -8,7 +8,7 @@ use Amethyst\Managers\WorkflowManager;
 use Amethyst\Managers\WorkflowNodeManager;
 use Symfony\Component\Yaml\Yaml;
 
-class StateTest extends BaseTest
+class StateTest extends Base
 {
     /**
      * Test basic workflow.

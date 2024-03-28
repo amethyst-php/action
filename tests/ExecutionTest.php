@@ -2,9 +2,9 @@
 
 namespace Amethyst\Tests;
 
-class ExecutionTest extends BaseTest
+class ExecutionTest extends Base
 {
-    public function testExecution()
+    public function testExecutionBasic()
     {
         $workflow = app('amethyst')->get('workflow')->createOrFail([
             'name' => 'test-1',
@@ -40,7 +40,7 @@ class ExecutionTest extends BaseTest
             ],
         ]);
 
-        $response = $this->json('POST', 'api/workflow/execute', [
+        $response = $this->json('POST', 'api/data/workflow/execute', [
             'query' => 'id eq 1',
         ]);
 

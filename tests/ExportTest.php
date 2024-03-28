@@ -2,7 +2,7 @@
 
 namespace Amethyst\Tests;
 
-class ExportTest extends BaseTest
+class ExportTest extends Base
 {
     public function testExport()
     {

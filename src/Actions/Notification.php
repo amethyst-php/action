@@ -16,7 +16,7 @@ class Notification extends Action
 
         foreach ($agents as $agent) {
             $agent->notify(new BaseNotification($data->get('message'), $data->get('vars')));
-            event(new NotificationEvent($agent, env('APP_NAME'), $data->get('message')));
+            event(new NotificationEvent($agent, config('app.name'), $data->get('message')));
         }
 
         $this->done($data);

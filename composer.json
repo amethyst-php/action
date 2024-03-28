@@ -4,20 +4,17 @@
     "keywords": ["laravel", "amethyst", "action"],
     "license": "MIT",
     "require": {
-        "php": ">=7.2",
-        "amethyst/core": "0.2.*",
-        "amethyst/relation": "0.2.*",
-        "railken/template": "^1.0",
-        "nicoswd/php-rule-parser": "^0.5.7",
-        "guzzlehttp/guzzle": "^6.3",
-        "namshi/cuzzle": "^2.0",
-        "amethyst/file": "0.2.*",
-        "amethyst/notification": "0.2.*",
-        "box/spout": "^2.7"
+        "php": ">=8.2",
+        "amethyst/core": "0.3.*",
+        "amethyst/relation": "0.3.*",
+        "railken/template": "^1.1",
+        "amethyst/file": "0.3.*",
+        "amethyst/notification": "0.3.*",
+        "box/spout": "^2.7",
+        "guzzlehttp/guzzle": "^7.8"
     },
     "require-dev": {
-        "amethyst/foo": "0.2.*",
-        "phpunit/phpunit": "7.*",
+        "amethyst/foo": "0.3.*",
         "orchestra/testbench": "*"
     },
     "autoload": {

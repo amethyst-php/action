@@ -4,10 +4,10 @@ namespace Amethyst\Tests\Managers;
 
 use Amethyst\Fakers\ActionFaker;
 use Amethyst\Managers\ActionManager;
-use Amethyst\Tests\BaseTest;
+use Amethyst\Tests\Base;
 use Railken\Lem\Support\Testing\TestableBaseTrait;
 
-class ActionTest extends BaseTest
+class ActionTest extends Base
 {
     use TestableBaseTrait;
 
