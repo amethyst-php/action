@@ -53,7 +53,8 @@ class Bag extends BaseBag
     public function restoreModel($value)
     {
         return $this->getQueryForModelRestoration(
-            app(MapContract::class)->keyToModel($value->class)->setConnection($value->connection), $value->id
+            app(MapContract::class)->keyToModel($value->class)->setConnection($value->connection),
+            $value->id
         )->useWritePdo()->firstOrFail()->load($value->relations ?? []);
     }
 
