@@ -13,7 +13,7 @@ class CreateWorkflowsTable extends Migration
     public function up()
     {
         Schema::create(Config::get('amethyst.action.data.workflow.table'), function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->string('name')->index();
             $table->text('description')->nullable();
             $table->boolean('autostart');

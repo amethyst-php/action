@@ -13,7 +13,7 @@ class CreateActionsTable extends Migration
     public function up()
     {
         Schema::create(Config::get('amethyst.action.data.action.table'), function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->string('name')->index();
             $table->text('description')->nullable();
             $table->text('payload');
