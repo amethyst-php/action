@@ -14,17 +14,12 @@ class CreateWorkflowNodesTable extends Migration
     {
         Schema::create(Config::get('amethyst.action.data.workflow-node.table'), function (Blueprint $table) {
             $table->id();
-
-            $table->integer('workflow_id')->unsigned();
-            $table->foreign('workflow_id')->references('id')->on(Config::get('amethyst.action.data.workflow.table'));
-
+            $table->foreignId('workflow_id')->on(Config::get('amethyst.action.data.workflow.table'));
             $table->string('target_type');
             $table->integer('target_id')->unsigned();
-
             $table->text('data')->nullable();
             $table->text('arguments')->nullable();
             $table->text('output')->nullable();
-
             $table->timestamps();
             $table->softDeletes();
         });

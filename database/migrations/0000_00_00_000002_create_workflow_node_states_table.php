@@ -14,13 +14,8 @@ class CreateWorkflowNodeStatesTable extends Migration
     {
         Schema::create(Config::get('amethyst.action.data.workflow-node-state.table'), function (Blueprint $table) {
             $table->id();
-
-            $table->integer('workflow_state_id')->unsigned();
-            $table->foreign('workflow_state_id')->references('id')->on(Config::get('amethyst.action.data.workflow-state.table'));
-
-            $table->integer('workflow_node_id')->unsigned();
-            $table->foreign('workflow_node_id')->references('id')->on(Config::get('amethyst.action.data.workflow-node.table'));
-
+            $table->foreignId('workflow_state_id')->on(Config::get('amethyst.action.data.workflow-state.table'));
+            $table->foreignId('workflow_node_id')->on(Config::get('amethyst.action.data.workflow-node.table'));
             $table->string('state');
             $table->longText('data')->nullable();
             $table->text('input')->nullable();

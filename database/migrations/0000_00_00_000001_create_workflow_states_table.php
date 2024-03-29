@@ -14,13 +14,9 @@ class CreateWorkflowStatesTable extends Migration
     {
         Schema::create(Config::get('amethyst.action.data.workflow-state.table'), function (Blueprint $table) {
             $table->id();
-
-            $table->integer('workflow_id')->unsigned();
-            $table->foreign('workflow_id')->references('id')->on(Config::get('amethyst.action.data.workflow.table'));
-
+            $table->foreignId('workflow_id')->on(Config::get('amethyst.action.data.workflow.table'));;
             $table->string('state');
             $table->binary('data')->nullable();
-
             $table->timestamps();
             $table->softDeletes();
         });
