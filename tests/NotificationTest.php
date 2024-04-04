@@ -26,7 +26,7 @@ class NotificationTest extends Base
         app('amethyst.action')->dispatchByWorkflow($workflow);
 
         $this->assertEquals(
-            "foo", 
+            "foo",
             app('amethyst')->get('notification')->getRepository()->newQuery()->where('notifiable_id', 1)->first()->data->message
         );
         $this->assertEquals(

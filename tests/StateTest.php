@@ -90,11 +90,11 @@ class StateTest extends Base
         event(new DummyEvent('Not Anymore!'));
 
         $this->assertEquals(
-            "Nome: DummyEvent: Yeah!", 
+            "Nome: DummyEvent: Yeah!",
             app('amethyst')->get('foo')->getRepository()->newQuery()->where('id', 1)->first()->name
         );
         $this->assertEquals(
-            "Nome: DummyEvent: Not Anymore!", 
+            "Nome: DummyEvent: Not Anymore!",
             app('amethyst')->get('foo')->getRepository()->newQuery()->where('id', 2)->first()->name
         );
         $this->assertEquals(
@@ -247,11 +247,11 @@ class StateTest extends Base
 
         // Only Street 1 should be called since of the switcher
         $this->assertEquals(
-            "Street 1: Event 1", 
+            "Street 1: Event 1",
             app('amethyst')->get('foo')->getRepository()->newQuery()->where('id', 1)->first()->name
         );
         $this->assertEquals(
-            "The end", 
+            "The end",
             app('amethyst')->get('foo')->getRepository()->newQuery()->where('id', 2)->first()->name
         );
         $this->assertEquals(
@@ -277,7 +277,7 @@ class StateTest extends Base
                 'arguments' => [],
             ]),
         ])->getResource();
-        
+
         $dataAction = $actionManager->createOrFail([
             'name'    => 'Data Manipulation',
             'payload' => Yaml::dump([
@@ -366,7 +366,7 @@ class StateTest extends Base
         event(new DummyEvent("It's time for a new request!"));
 
         $this->assertEquals(
-            "Status: 404", 
+            "Status: 404",
             app('amethyst')->get('foo')->getRepository()->newQuery()->where('id', 1)->first()->description
         );
         $this->assertEquals(

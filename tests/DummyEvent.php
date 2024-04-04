@@ -18,7 +18,7 @@ class DummyEvent
         ];
     }
 
-    public function __toString() 
+    public function __toString()
     {
         return "DummyEvent: ".$this->message;
     }

@@ -203,7 +203,7 @@ class Action
                 foreach ($output as $key => $value) {
 
                     if (array_is_list($output->toArray())) {
-                        $key = $value; 
+                        $key = $value;
                     }
 
                     $output->set($key, \Illuminate\Support\Arr::get($data->toArray(), $value));
