@@ -51,7 +51,6 @@ class Action
     {
         Log::debug('Workflow - Checking');
 
-        $this->boot();
         $this->dispatchByRelations();
         $this->dispatchByWorkflowNodeState();
     }
@@ -79,6 +78,7 @@ class Action
         $this->events = Collection::make();
 
         Event::listen(['*'], function ($eventName, $events) {
+
             if (count($events) === 0) {
                 return true;
             }
@@ -191,6 +191,8 @@ class Action
                 $workflowState = $workflowNodeState->workflow_state;
             }
 
+
+
             // Data is filtered based on output workflowNode
             $output = new Bag((array) Yaml::parse((string) $workflowNode->output));
 
@@ -199,6 +201,11 @@ class Action
 
             if (count($output) > 0) {
                 foreach ($output as $key => $value) {
+
+                    if (array_is_list($output->toArray())) {
+                        $key = $value; 
+                    }
+
                     $output->set($key, \Illuminate\Support\Arr::get($data->toArray(), $value));
                 }
 
@@ -206,6 +213,7 @@ class Action
 
                 $data = new Bag($output);
             }
+
 
             // Define a new state for the node as done
             // First time executed, already done
@@ -293,6 +301,9 @@ class Action
 
         $rendered = $generator->generateAndRender($workflowNode->data, $data->toArray());
         $data = $data->merge(Yaml::parse($rendered));
+
+
+        Log::debug('Rendering data pre-handle: '.$workflowNode->data);
 
         $actioner->setData($data);
 

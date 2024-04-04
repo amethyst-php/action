@@ -46,6 +46,7 @@ class StateTest extends Base
 
         $workflow = $workflowManager->createOrFail([
             'name' => 'Log events',
+            'autostart' => 1
         ])->getResource();
 
         $node1 = $workflowNodeManager->createOrFail([
@@ -66,7 +67,7 @@ class StateTest extends Base
                 'name'       => 'foo',
                 'action'     => 'create',
                 'parameters' => [
-                    'name' => '{{ event.message }}',
+                    'name' => 'Nome: {{ event }}',
                 ],
             ]),
         ])->getResource();
@@ -87,6 +88,19 @@ class StateTest extends Base
 
         event(new DummyEvent('Yeah!'));
         event(new DummyEvent('Not Anymore!'));
+
+        $this->assertEquals(
+            "Nome: DummyEvent: Yeah!", 
+            app('amethyst')->get('foo')->getRepository()->newQuery()->where('id', 1)->first()->name
+        );
+        $this->assertEquals(
+            "Nome: DummyEvent: Not Anymore!", 
+            app('amethyst')->get('foo')->getRepository()->newQuery()->where('id', 2)->first()->name
+        );
+        $this->assertEquals(
+            2,
+            app('amethyst')->get('foo')->getRepository()->newQuery()->count()
+        );
     }
 
     public function testSwitcher()
@@ -122,6 +136,7 @@ class StateTest extends Base
 
         $workflow = $workflowManager->createOrFail([
             'name' => 'Should work with 2 workflow',
+            'autostart' => 1
         ])->getResource();
 
         $node1 = $workflowNodeManager->createOrFail([
@@ -229,6 +244,20 @@ class StateTest extends Base
         ]);
 
         event(new DummyEvent('1'));
+
+        // Only Street 1 should be called since of the switcher
+        $this->assertEquals(
+            "Street 1: Event 1", 
+            app('amethyst')->get('foo')->getRepository()->newQuery()->where('id', 1)->first()->name
+        );
+        $this->assertEquals(
+            "The end", 
+            app('amethyst')->get('foo')->getRepository()->newQuery()->where('id', 2)->first()->name
+        );
+        $this->assertEquals(
+            2,
+            app('amethyst')->get('foo')->getRepository()->newQuery()->count()
+        );
     }
 
     /**
@@ -248,6 +277,14 @@ class StateTest extends Base
                 'arguments' => [],
             ]),
         ])->getResource();
+        
+        $dataAction = $actionManager->createOrFail([
+            'name'    => 'Data Manipulation',
+            'payload' => Yaml::dump([
+                'class'     => 'data',
+                'arguments' => [],
+            ]),
+        ])->getResource();
 
         $eventListenerAction = $actionManager->createOrFail([
             'name'    => 'Event Listener',
@@ -259,6 +296,7 @@ class StateTest extends Base
 
         $workflow = $workflowManager->createOrFail([
             'name' => 'Send http call',
+            'autostart' => 1
         ])->getResource();
 
         $node1 = $workflowNodeManager->createOrFail([
@@ -277,7 +315,7 @@ class StateTest extends Base
             'target_id'   => $httpAction->id,
             'output'      => Yaml::dump(['response']),
             'data'        => Yaml::dump([
-                'url'     => 'https://api.github.com/orgs/octokit/repos',
+                'url'     => 'https://api.github.com/random',
                 'method'  => 'GET',
                 'headers' => [
                     'test' => 'Hello',
@@ -286,6 +324,20 @@ class StateTest extends Base
                     'param' => "I'm a simple param",
                 ],
                 'json' => true,
+            ]),
+        ])->getResource();
+
+        $node3 = $workflowNodeManager->createOrFail([
+            'workflow_id' => $workflow->id,
+            'target_type' => 'action',
+            'target_id'   => $dataAction->id,
+            'data'        => Yaml::dump([
+                'name'       => 'foo',
+                'action'     => 'create',
+                'parameters' => [
+                    'name' => 'Request Log',
+                    'description' => 'Status: {{ response.status }}',
+                ],
             ]),
         ])->getResource();
 
@@ -303,9 +355,26 @@ class StateTest extends Base
             'target_id'   => $node2->id,
         ]);
 
-        event(new DummyEvent("It's time for a new request!"));
-    }
+        $relationManager->createOrFail([
+            'source_type' => 'workflow-node',
+            'source_id'   => $node2->id,
+            'target_type' => 'workflow-node',
+            'target_id'   => $node3->id,
+        ]);
 
+
+        event(new DummyEvent("It's time for a new request!"));
+
+        $this->assertEquals(
+            "Status: 404", 
+            app('amethyst')->get('foo')->getRepository()->newQuery()->where('id', 1)->first()->description
+        );
+        $this->assertEquals(
+            1,
+            app('amethyst')->get('foo')->getRepository()->newQuery()->count()
+        );
+    }
+    /**
     public function testNodes()
     {
         $node = \Amethyst\Services\Node::workflow('Hello darkness my old friend');
@@ -349,4 +418,5 @@ class StateTest extends Base
             ],
         ]);
     }
+    */
 }

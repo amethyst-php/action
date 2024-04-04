@@ -49,6 +49,7 @@ class ActionServiceProvider extends CommonServiceProvider
         app('amethyst.action')->addType('notification', Actions\Notification::class);
 
         if (app('amethyst')->hasAllTables('amethyst.action.data')) {
+            app('amethyst.action')->boot();
             app('amethyst.action')->starter();
         }
 
